@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu');
+
+.card-unique  {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-unit {
+  max-width: 20rem;
+  margin-right: 2rem;
+  background-color: #fff; /* Cor de fundo do card */
+  border-radius: 10px; /* Borda arredondada, ajuste conforme necessário */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Sombreamento leve */
+}
+
+body {
+  /* color: #010409; */
+  font-family: 'Ubuntu', sans-serif;
+  /* background: linear-gradient(0deg, #A5C39F, #FFFFFF); */
+}
+
+.titulo {
+  margin-top: 15px;
+  font-size: 30px;
+  margin-bottom: 5px;
+}
+
+/* Estilo para inputs */
+.input-style {
+  background-color: #f5f5f5; /* Cor de fundo do input */
+  color: #333333; /* Cor do texto do input */
+  border: 1px solid #dddddd; /* Borda do input */
+  padding: 8px; /* Espaçamento interno */
+  margin-bottom: 10px; /* Espaçamento inferior */
+  width: 100%; /* Ocupa toda a largura disponível */
+  box-sizing: border-box; /* Garante que a largura inclui a borda e o preenchimento */
+}
+
+.input-style:focus {
+  outline: none; /* Remove a borda de foco padrão */
+  border-color: #007bff; /* Cor da borda ao receber foco */
+}
+
+/* Estilo para botão CSV */
+.botao-csv {
+  text-indent: -9999px;
+  width: 40px;
+  height: 25px;
+  background-color: #007bff; /* Cor de fundo do botão */
+  border: none; /* Remover a borda do botão */
+}
+
+/* Estilo para botões de ação */
+.tamanho-botao {
+  padding: 8px 12px; /* Espaçamento interno */
+  font-size: 13px;
+  margin-right: 5px; /* Espaçamento direito entre botões */
+}
+
+.btn-cotacao {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Sombreamento leve */
+}
+
+.botao-alterar,
+.botao-excluir,
+.botao-cancelar,
+.botao-reativar {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.botao-alterar {
+  background: #374797;
+}
+
+.botao-alterar:hover {
+  background: #1f2858;
+}
+
+.botao-excluir {
+  background: #a02020;
+}
+
+.botao-excluir:hover {
+  background: #741717;
+}
+
+.botao-cancelar {
+  background: #d3a307;
+}
+
+.botao-cancelar:hover {
+  background: #634c04;
+}
+
+.botao-reativar {
+  background: #0d6efd;
+}
+
+.botao-reativar:hover {
+  background: #0a58ca;
+}
+
+.botao-submit {
+  text-align: right;
+}
+
+
+
+/* Adicionando estilos ao container do formulário */
+.form-container {
+  display: flex;
+  flex-direction: column; /* Alinha os itens verticalmente */
+  max-width: 100%;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+/* Estilo para os campos do formulário */
+.form-control {
+  margin-bottom: 10px;
+}
+
+/* Estilo para os rótulos do formulário */
+.col-form-label {
+  font-weight: bold;
+}
+
+/* Estilo para o botão de envio */
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Adicionando um estilo adicional ao último rótulo */
+.row:last-child .col-form-label {
+  color: #007bff;
+}
+
+/* Adicionando estilo ao texto abaixo do formulário */
+.texto-informativo {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Adicionando estilo ao texto de total de cotações */
+.total-cotacoes {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+

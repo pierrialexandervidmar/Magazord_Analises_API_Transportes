@@ -1,0 +1,19 @@
+.list {
+  display: flex;
+  list-style-type: none;
+  padding: 10px 20px;
+  background-color: rgb(107, 173, 107);
+}
+
+.item {
+  margin-right: 1em;
+  color: white;
+  transition: color 0.3s ease; /* Adiciona uma transição suave à cor */
+  text-decoration: none;
+
+}
+
+.item:hover {
+  color: rgb(93, 97, 92);
+  cursor: pointer; /* Altera o cursor para indicar que é clicável */
+}
