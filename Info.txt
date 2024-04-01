@@ -1,0 +1,37 @@
+curl --location 'https://api-transporte.magazord.com.br/api/v1/calculoFreteAnalise' \
+--header 'zord-token: 26357d37471ee60fc037f0ebb1a81a01eba98230' \
+--header 'Content-Type: application/json' \
+--data '{
+  "cepOrigem": "88330033",
+  "cepDestino": "89560120",
+  "dimensaoCalculo": "10,15,25",
+  "valorDeclarado": 250,
+  "produtos": [
+    {
+      "sku": "151010",
+      "descricao": "Teste",
+      "altura": 10,
+      "largura": 15,
+      "comprimento": 25,
+      "peso": 10,
+      "quantidade": 1,
+      "valor": 250,
+      "volumes": 1,
+      "volumesDetalhes": [
+        {
+          "altura": 10,
+          "largura": 15,
+          "comprimento": 25,
+          "peso": 10
+        }
+      ]
+    }
+  ],
+  "tabChave": [
+    "BPS",
+    "BAU"
+  ]
+}'
+
+curl --location 'https://api-transporte.magazord.com.br/api/rastreio/notaFiscal/pedidoCalculo?identificador=casaferrari%2Cladorosa&sigla=GFL%2CRSL%2CEXP&dataInicio=2024-01-01&dataFim=2024-01-30&offset=50&page=1' \
+--header 'zord-token: 26357d37471ee60fc037f0ebb1a81a01eba98230'

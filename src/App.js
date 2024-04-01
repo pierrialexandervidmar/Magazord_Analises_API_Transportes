@@ -1,5 +1,5 @@
 //import './App.css';
-import Navbar from './components/navbar';
+import Navbar from './components/layout/navbar';
 import CalculoAnalises from './pages/CalculoAnalises';
 import Home from './pages/Home';
 import MultiplosClientes from './pages/MultiplosClientes';

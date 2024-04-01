@@ -240,7 +240,6 @@ function MultiplosClientes() {
             return;
         }
 
-
         try {
             const tokensDoCliente = tokenInput.split(',');
 
