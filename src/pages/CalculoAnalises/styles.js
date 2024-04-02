@@ -6,6 +6,10 @@ export const Container = styled.div`
     
 `;
 
+export const Title = styled.h3`
+    color: #888;    
+`;
+
 export const Body = styled.div`
   margin: auto;
   max-width: 90%;

@@ -49,7 +49,9 @@ function CalculoAnalises() {
     <div>
       <C.Container>
         <C.Body>
-          <h1>Buscar Pedidos</h1>
+          <C.Title>
+            <h3>Buscar Pedidos</h3>
+          </C.Title>
           <InputArea onAdd={handleAddData} />
           {loading && <div>Carregando...</div>}
           {error && <div>{error}</div>}
