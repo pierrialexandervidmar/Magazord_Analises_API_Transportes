@@ -2,18 +2,23 @@
   display: flex;
   list-style-type: none;
   padding: 10px 20px;
-  background-color: rgb(107, 173, 107);
+  background-color: #5042cc;
 }
 
 .item {
   margin-right: 1em;
-  color: white;
-  transition: color 0.3s ease; /* Adiciona uma transição suave à cor */
-  text-decoration: none;
-
 }
 
-.item:hover {
-  color: rgb(93, 97, 92);
+.link {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Adiciona uma transição suave */
+}
+
+.link:hover {
+  background-color: #4339b8; /* Altera a cor de fundo ao passar o mouse */
+  transform: scale(1.05); /* Adiciona um efeito de escala ao passar o mouse */
   cursor: pointer; /* Altera o cursor para indicar que é clicável */
 }

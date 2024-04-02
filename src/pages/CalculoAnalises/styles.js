@@ -1,11 +1,13 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  background-color: red;
+    background-color: #FFF;
+    align-items: center;
+    
 `;
 
-export const Paragrafo = styled.p`
-  background-color: green;
-  color: white;
-  
+export const Body = styled.div`
+  margin: auto;
+  max-width: 90%;
+  margin-bottom: 50px;
 `;
