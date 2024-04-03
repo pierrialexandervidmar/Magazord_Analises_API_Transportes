@@ -1,10 +1,5 @@
-const { create, get, getId, remove, update } = require("../controllers/user.controller");
-const { verifyToken } = require("../middlewares/auth.middleware");
+const { buscarPedidosFiltrados } = require("../controllers/pedidos.controller");
 
 exports.pedidosRoute = app => {
-    app.post("/user", create);
-    app.get("/users", verifyToken, get);
-    app.get("/user/:id", verifyToken, getId);
-    app.put("/user/:id", verifyToken, update);
-    app.delete("/user/:id", verifyToken, remove);
+    app.get("/pedidosFiltrados", getPedidosFiltrados);
 };
