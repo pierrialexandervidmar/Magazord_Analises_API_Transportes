@@ -1,16 +1,16 @@
 import { buscarPedidosFiltrados } from '../services/pedidos.service.js';
 
 export const getPedidosFiltrados = async (req, res) => {
-  const identificador = req.params.identificador;
-  const sigla = req.params.sigla;
-  const dataInicio = req.params.dataInicio;
-  const dataFim = req.params.dataFim;
+  const identificador = req.query.identificador;
+  const sigla = req.query.sigla;
+  const dataInicio = req.query.dataInicio;
+  const dataFim = req.query.dataFim;
 
   if (
     identificador?.trim() && 
     sigla?.trim() && 
-    dataInicio instanceof Date && 
-    dataFim instanceof Date
+    dataInicio && 
+    dataFim
   ) {
     try {
       const pedidos = await buscarPedidosFiltrados(identificador, sigla, dataInicio, dataFim);
@@ -22,4 +22,3 @@ export const getPedidosFiltrados = async (req, res) => {
     res.status(400).send({ error: "Todos os parâmetros são obrigatórios e devem ser válidos" });
   }
 }
-

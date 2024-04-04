@@ -1,3 +1,6 @@
+import axios from 'axios';
+import fs from 'fs';
+
 export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFim) => {
   const pedidos = [];
   let totalPaginas = Infinity;
@@ -27,15 +30,21 @@ export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, d
         }
       );
       todosPedidos = [...todosPedidos, ...response.data.pedidos];
-      if(pagina === 1) {
+      if (pagina === 1) {
         totalPaginas = Math.ceil(response.data.quatidadeTotal / pedidosPorPagina);
       }
       pagina++;
-      
+
       if (pagina > totalPaginas) { // Verificar se já passamos do número total de páginas
         break;
       }
     }
+
+    // Converter o array de pedidos em uma string formatada
+    const pedidosString = JSON.stringify(todosPedidos, null, 2);
+
+    // Escrever a string em um arquivo de texto
+    fs.writeFileSync('pedidos.txt', pedidosString);
 
     return todosPedidos;
   } catch (error) {
