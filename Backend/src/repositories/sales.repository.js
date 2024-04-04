@@ -1,7 +1,7 @@
-const { prisma } = require("../services/prisma");
+import { prisma } from "../services/prisma.js";
 
 // CRIAR UMA VENDA
-exports.createSale = async (data) => {
+export const createSale = async (data) => {
     const sale = await prisma.sales.create({
         data: data
     });
@@ -9,13 +9,13 @@ exports.createSale = async (data) => {
 }
 
 // LISTAR VENDAS
-exports.getSales = async () => {
+export const getSales = async () => {
     const sales = await prisma.sales.findMany({});
     return sales;
 }
 
 // LISTAR UMA VENDA
-exports.findSale = async (id) => {
+export const findSale = async (id) => {
     const sale = await prisma.sales.findUnique({
         where: {
             id: id
@@ -25,7 +25,7 @@ exports.findSale = async (id) => {
 }
 
 // ATUALIZAR UMA VENDA
-exports.updateSale = async (id, data) => {
+export const updateSale = async (id, data) => {
     const sale = await prisma.sales.update({
         where: {
             id: id
@@ -36,11 +36,10 @@ exports.updateSale = async (id, data) => {
 }
 
 // DELETAR UMA VENDA
-exports.removeSale = async (id) => {
+export const removeSale = async (id) => {
     await prisma.sales.delete({
         where: {
             id: id
         }
     });
-    return;
 }

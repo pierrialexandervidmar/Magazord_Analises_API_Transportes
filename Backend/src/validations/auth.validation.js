@@ -1,6 +1,6 @@
-const { z } = require('zod');
+import { z } from 'zod';
 
-exports.authValidation = z.object({
+export const authValidation = z.object({
   email: z.string().email(),
   password: z.string(),
 });

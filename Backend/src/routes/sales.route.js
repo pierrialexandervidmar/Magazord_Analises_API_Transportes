@@ -1,7 +1,7 @@
-const { create, get, getId, remove, update } = require("../controllers/sales.controller");
-const { verifyToken } = require("../middlewares/auth.middleware");
+import { create, get, getId, remove, update } from "../controllers/sales.controller.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 
-exports.saleRoutes = app => {
+export const saleRoutes = app => {
     app.post("/sale", verifyToken, create);
     app.get("/sales", verifyToken, get);
     app.get("/sale/:id", verifyToken, getId);

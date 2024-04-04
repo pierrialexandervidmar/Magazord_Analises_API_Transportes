@@ -1,5 +1,5 @@
-const { login } = require('../controllers/auth.controller');
+import { login } from '../controllers/auth.controller.js';
 
-exports.authRoutes = app => {
+export const authRoutes = app => {
     app.post("/login", login);
 }

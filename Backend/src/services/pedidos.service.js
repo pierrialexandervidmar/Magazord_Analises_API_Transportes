@@ -1,7 +1,6 @@
-
-exports.buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFim) => {
+export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFim) => {
   const pedidos = [];
-  const totalPaginas = Infinity;
+  let totalPaginas = Infinity;
 
   try {
     let todosPedidos = [];
@@ -38,5 +37,9 @@ exports.buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFi
       }
     }
 
-    return pedidos;
+    return todosPedidos;
+  } catch (error) {
+    console.error("Erro ao buscar pedidos:", error);
+    throw error; // Rejeita a promessa com o erro capturado
+  }
 }

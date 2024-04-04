@@ -1,12 +1,12 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-exports.verifyToken = async (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
     const token = req.headers.authorization;
 
-    if(!token) {
+    if (!token) {
         return res.status(401).send({
             message: "É obrigatório informar um token válido"
-        })
+        });
     }
 
     try {
@@ -16,4 +16,4 @@ exports.verifyToken = async (req, res, next) => {
     } catch (error) {
         return res.status(401).send({ message: "Credenciais Inválidas" });
     }
-}
+};

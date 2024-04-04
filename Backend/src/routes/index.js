@@ -1,11 +1,11 @@
-const { userRoutes } = require("./user.route");
-const { authRoutes } = require("./auth.route");
-const { saleRoutes } = require("./sales.route");
-const { pedidosRoute } = require('./pedidos.route');
+import { userRoutes } from "./user.route.js";
+import { authRoutes } from "./auth.route.js";
+import { saleRoutes } from "./sales.route.js";
+import { pedidosRoute } from './pedidos.route.js';
 
-module.exports = (app) => {
+export default function setupRoutes(app) {
     userRoutes(app);
     authRoutes(app);
     saleRoutes(app);
     pedidosRoute(app);
-};
+}

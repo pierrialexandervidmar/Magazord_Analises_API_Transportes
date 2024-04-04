@@ -1,11 +1,9 @@
-const { prisma } = require('../services/prisma');
+import { prisma } from '../services/prisma.js';
 
-exports.getUser = async (email) => {
+export const getUser = async (email) => {
     return await prisma.user.findUnique({
         where: {
             email
         }
     });
-    return user;
 };
-

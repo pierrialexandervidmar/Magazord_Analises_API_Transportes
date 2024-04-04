@@ -1,17 +1,16 @@
-const { getUser } = require('../repositories/auth.respository');
-const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
-const { authValidation } = require("../validations/auth.validation");
+import { getUser } from '../repositories/auth.respository.js';
+import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken';
+import { authValidation } from "../validations/auth.validation.js";
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
     try {
-        
         const data = await authValidation.parse(req.body);
         const user = await getUser(data.email);
 
         if (!user) throw { message: "Usuário não Existe" }
 
-        if(user && bcrypt.compareSync(req.body.password, user.password)) {
+        if (user && bcrypt.compareSync(req.body.password, user.password)) {
             const token = jwt.sign({
                 id: user.id,
                 email: user.email,
@@ -26,7 +25,7 @@ exports.login = async (req, res) => {
                 token: token
             })
 
-        } {
+        } else {
             return res.status(401).send({ message: "Usuário e/ou senha incorretos"});
         }
     } catch (error) {

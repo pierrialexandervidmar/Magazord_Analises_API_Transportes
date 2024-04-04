@@ -1,6 +1,6 @@
-const { prisma } = require("../services/prisma")
+import { prisma } from "../services/prisma.js";
 
-exports.createUser = async (data) => {
+export const createUser = async (data) => {
     const user = await prisma.user.create({
         data,
         select: {
@@ -10,10 +10,10 @@ exports.createUser = async (data) => {
             password: false,
         }
     });
-    return user
+    return user;
 }
 
-exports.getUser = async () => {
+export const getUser = async () => {
     const users = await prisma.user.findMany({
         select: {
             id: true,
@@ -25,7 +25,7 @@ exports.getUser = async () => {
     return users;
 };
 
-exports.getById = async (id) => {
+export const getById = async (id) => {
     const user = await prisma.user.findUnique({
         where: {
             id
@@ -40,7 +40,7 @@ exports.getById = async (id) => {
     return user;
 }
 
-exports.updateUser = async (id, data) => {
+export const updateUser = async (id, data) => {
     const user = await prisma.user.update({
         where: {
             id
@@ -56,11 +56,10 @@ exports.updateUser = async (id, data) => {
     return user;
 }
 
-exports.removeUser = async (id) => {
-    const user = await prisma.user.delete({
+export const removeUser = async (id) => {
+    await prisma.user.delete({
         where: {
             id
         }
     })
-    return;
 }

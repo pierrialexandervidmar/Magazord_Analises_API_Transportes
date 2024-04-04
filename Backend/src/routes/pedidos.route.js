@@ -1,5 +1,5 @@
-const { buscarPedidosFiltrados } = require("../controllers/pedidos.controller");
+import { getPedidosFiltrados } from '../controllers/pedidos.controller.js';
 
-exports.pedidosRoute = app => {
+export const pedidosRoute = app => {
     app.get("/pedidosFiltrados", getPedidosFiltrados);
 };

@@ -1,7 +1,7 @@
-const { z } = require("zod");
+import { z } from "zod";
 
-exports.userValidation = z.object({
+export const userValidation = z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
-})
+});

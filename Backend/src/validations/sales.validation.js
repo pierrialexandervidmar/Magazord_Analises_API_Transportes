@@ -1,7 +1,6 @@
-const { z } = require('zod');
+import { z } from 'zod';
 
-
-exports.saleValidation = z.object({
+export const saleValidation = z.object({
     coin: z.string(),
     date_purchase: z.string(),
     value_purchase: z.number(),
@@ -9,7 +8,7 @@ exports.saleValidation = z.object({
     total_money_purchase: z.number(),
 });
 
-exports.updateValidation = z.object({
+export const updateValidation = z.object({
     value_sale: z.number(),
     date_sale: z.string(),
     unity_sale: z.number(),

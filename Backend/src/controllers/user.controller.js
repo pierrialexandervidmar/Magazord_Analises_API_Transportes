@@ -1,8 +1,8 @@
-const { createUser, getById, getUser, removeUser, updateUser } = require("../repositories/user.repository");
-const bcrypt = require("bcrypt");
-const { userValidation } = require("../validations/user.validation");
+import { createUser, getById, getUser, removeUser, updateUser } from "../repositories/user.repository.js";
+import bcrypt from "bcrypt";
+import { userValidation } from "../validations/user.validation.js";
 
-exports.create = async (req, res) => {
+export const create = async (req, res) => {
     try {
         const data = await userValidation.parse(req.body);
         data.password = bcrypt.hashSync(req.body.password, 10);
@@ -13,7 +13,7 @@ exports.create = async (req, res) => {
     }
 }
 
-exports.get = async (req, res) => {
+export const get = async (req, res) => {
     try {
         const users = await getUser();
         res.status(200).send(users);
@@ -22,7 +22,7 @@ exports.get = async (req, res) => {
     }
 }
 
-exports.getId = async (req, res) => {
+export const getId = async (req, res) => {
     try {
         const user = await getById(Number(req.params.id));
         res.status(200).send(user);
@@ -31,7 +31,7 @@ exports.getId = async (req, res) => {
     }
 }
 
-exports.update = async (req, res) => {
+export const update = async (req, res) => {
     try {
         const user = await updateUser(Number(req.params.id), req.body);
         res.status(200).send(user);
@@ -40,7 +40,7 @@ exports.update = async (req, res) => {
     }
 }
 
-exports.remove = async (req, res) => {
+export const remove = async (req, res) => {
     try {
         const user = await removeUser(Number(req.params.id));
         res.status(200).send();

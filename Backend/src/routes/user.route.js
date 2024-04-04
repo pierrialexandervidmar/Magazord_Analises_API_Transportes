@@ -1,7 +1,7 @@
-const { create, get, getId, remove, update } = require("../controllers/user.controller");
-const { verifyToken } = require("../middlewares/auth.middleware");
+import { create, get, getId, remove, update } from "../controllers/user.controller.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 
-exports.userRoutes = app => {
+export const userRoutes = app => {
     app.post("/user", create);
     app.get("/users", verifyToken, get);
     app.get("/user/:id", verifyToken, getId);
