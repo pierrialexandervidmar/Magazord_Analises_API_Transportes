@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 
-export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFim) => {
+export const buscarPedidosFiltradosssss = async (identificador, sigla, dataInicio, dataFim) => {
   const pedidos = [];
   let totalPaginas = Infinity;
 
@@ -43,10 +43,8 @@ export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, d
     // Aguardar todas as requisições em paralelo
     const responses = await Promise.all(promessas);
 
-    
     // Extrair os pedidos de todas as respostas
     const todosPedidos = responses.flatMap(response => response.data.pedidos);
-    console.log('O número total de pedidos é: ' + todosPedidos.length)
 
     // Converter o array de pedidos em uma string formatada
     const pedidosString = JSON.stringify(todosPedidos, null, 2);
@@ -56,8 +54,7 @@ export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, d
 
     return todosPedidos;
   } catch (error) {
-    const deuMerda = JSON.stringify(error);
-    fs.writeFileSync('LogErro.json', deuMerda);
+    console.error("Erro ao buscar pedidos:", error);
     throw error; // Rejeita a promessa com o erro capturado
   }
 }

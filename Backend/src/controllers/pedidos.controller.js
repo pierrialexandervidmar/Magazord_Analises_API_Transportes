@@ -1,10 +1,12 @@
-import { buscarPedidosFiltrados } from '../services/pedidos.service.js';
+import { buscarPedidosFiltrados } from '../services/pedidos.service.js'
 
 export const getPedidosFiltrados = async (req, res) => {
   const identificador = req.query.identificador;
   const sigla = req.query.sigla;
   const dataInicio = req.query.dataInicio;
   const dataFim = req.query.dataFim;
+
+  console.log(identificador + ' ' + sigla + ' ' + dataInicio + ' ' + dataFim)
 
   if (
     identificador?.trim() && 
@@ -14,6 +16,7 @@ export const getPedidosFiltrados = async (req, res) => {
   ) {
     try {
       const pedidos = await buscarPedidosFiltrados(identificador, sigla, dataInicio, dataFim);
+      console.log('passei aqui')
       res.status(200).send(pedidos);
     } catch (error) {
       res.status(400).send({ error: error.message });
