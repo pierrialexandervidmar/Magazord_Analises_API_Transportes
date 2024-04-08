@@ -1,0 +1,11 @@
+Para realizar essa tarefa com um backend Node.js, você pode seguir estes passos:
+
+1. Criar uma rota no seu servidor Node.js que receba o primeiro payload. - OK
+
+2. Extrair os dados relevantes desse payload, como "cepOrigem", "cepDestino", "dimensaoCalculo", "valorDeclarado" e detalhes dos produtos.
+
+3. Formatar os dados extraídos conforme o formato necessário para enviar ao segundo endpoint.
+
+4. Enviar os dados formatados para o segundo endpoint.
+
+5. Receber a resposta do segundo endpoint e manipulá-la conforme necessário.

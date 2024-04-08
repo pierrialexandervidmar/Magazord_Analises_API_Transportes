@@ -1,0 +1,31 @@
+{
+  "cepOrigem": "88330033",
+  "cepDestino": "89560120",
+  "dimensaoCalculo": "10,15,25",
+  "valorDeclarado": 250,
+  "produtos": [
+    {
+      "sku": "151010",
+      "descricao": "Teste",
+      "altura": 10,
+      "largura": 15,
+      "comprimento": 25,
+      "peso": 10,
+      "quantidade": 1,
+      "valor": 250,
+      "volumes": 1,
+      "volumesDetalhes": [
+        {
+          "altura": 10,
+          "largura": 15,
+          "comprimento": 25,
+          "peso": 10
+        }
+      ]
+    }
+  ],
+  "tabChave": [
+    "BPS",
+    "BAU"
+  ]
+}
