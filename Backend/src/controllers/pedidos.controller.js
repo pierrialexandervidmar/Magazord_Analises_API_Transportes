@@ -1,4 +1,4 @@
-import { buscarPedidosFiltrados, refazCotacoes } from '../services/pedidos.service.js'
+import { buscarPedidosFiltrados, buscarPedidos } from '../services/pedidos.service.js'
 
 export const getPedidosFiltrados = async (req, res) => {
   const identificador = req.query.identificador;
@@ -44,11 +44,11 @@ export const getRefazCotacoes = async (req, res) => {
     dataFim
   ) {
     try {
-      const pedidos = await buscarPedidosFiltrados(identificador, sigla, dataInicio, dataFim);
-      const pedidosRecalculados = await refazCotacoes(pedidos);
+      const pedidos = await buscarPedidos(identificador, sigla, dataInicio, dataFim);
+      //const pedidosRecalculados = await refazCotacoes(pedidos);
 
       console.log('passei aqui')
-      res.status(200).json(pedidosRecalculados);
+      res.status(200).json(pedidos);
     } catch (error) {
       res.status(400).send(error.message); // Enviar a mensagem de erro diretamente
     }

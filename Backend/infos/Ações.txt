@@ -9,3 +9,8 @@ Para realizar essa tarefa com um backend Node.js, você pode seguir estes passos
 4. Enviar os dados formatados para o segundo endpoint.
 
 5. Receber a resposta do segundo endpoint e manipulá-la conforme necessário.
+
+
+MUDANÇAS:
+Mudar método para buscar por paginação os pedidos, efetuar a cotação, persistir no banco dados, em seguida buscar os demais, e por fim devolver.
+
