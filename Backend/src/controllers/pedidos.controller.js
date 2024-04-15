@@ -31,23 +31,24 @@ export const getPedidosFiltrados = async (req, res) => {
 
 export const getRefazCotacoes = async (req, res) => {
   const identificador = req.query.identificador;
-  const sigla = req.query.sigla;
+  const siglasNovaCotacao = req.query.siglasNovaCotacao;
   const dataInicio = req.query.dataInicio;
   const dataFim = req.query.dataFim;
+  // Sigla original é opcional, caso queiram recotar somente os pedidos de uma determinada
+  // transporportadora do periodo com as siglas novas de cotações
+  let siglaOriginal = req.query.siglaOriginal || null;
 
-  console.log(identificador + ' ' + sigla + ' ' + dataInicio + ' ' + dataFim)
+  console.log(identificador + ' ' + siglasNovaCotacao + ' ' + dataInicio + ' ' + dataFim + ' ' + siglaOriginal)
 
   if (
     identificador?.trim() &&
-    sigla?.trim() &&
+    siglasNovaCotacao?.trim() &&
     dataInicio &&
     dataFim
   ) {
     try {
-      const pedidos = await buscarPedidos(identificador, sigla, dataInicio, dataFim);
-      //const pedidosRecalculados = await refazCotacoes(pedidos);
+      const pedidos = await buscarPedidos(identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null);
 
-      console.log('passei aqui')
       res.status(200).json(pedidos);
     } catch (error) {
       res.status(400).send(error.message); // Enviar a mensagem de erro diretamente

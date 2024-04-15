@@ -63,63 +63,7 @@ export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, d
 }
 
 
-
-
-const realizarNovasCotacoes = async (pedidos) => {
-  const pedidosRecalculados = [];
-
-  try {
-    // Iterar sobre os pedidos
-    for (const pedido of pedidos) {
-      // Extrair os dados necessários
-      const {
-        cepOrigem,
-        cepDestino,
-        dimensaoCalculo,
-        valorDeclarado,
-        produtos,
-      } = pedido;
-
-      // Preencher a variável tabChave com os valores adequados
-      const tabChave = ["BPS", "BAU"];
-
-      // Formatar os dados conforme necessário para enviar ao segundo endpoint
-      const payload = {
-        cepOrigem: cepOrigem,
-        cepDestino: cepDestino,
-        dimensaoCalculo: dimensaoCalculo,
-        valorDeclarado: valorDeclarado,
-        produtos: produtos,
-        tabChave: tabChave
-      };
-
-      const headers = {
-        "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
-        "Content-Type": "application/json",
-      };
-
-      // Enviar os dados formatados para o segundo endpoint
-      const response = await axios.post('https://api-transporte.magazord.com.br/api/v1/calculoFreteAnalise', payload, { headers })
-        .then(response => {
-          pedidosRecalculados.push(response.data);
-        })
-        .catch(error => {
-          console.log('Deu merda ao refazer cotações: ', error);
-        });
-    }
-  } catch (error) {
-    console.error('Erro ao processar pedidos:', error);
-    // res.status(500).json({ error: 'Erro ao processar pedidos.' }); // O objeto `res` não está definido aqui
-  }
-
-  return pedidosRecalculados;
-}
-
-
-
-
-
-export const buscarPedidos = async (identificador, sigla, dataInicio, dataFim) => {
+export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null) => {
   let totalPaginas = Infinity;
   let todosPedidosRecalculados = [];
 
@@ -130,7 +74,6 @@ export const buscarPedidos = async (identificador, sigla, dataInicio, dataFim) =
       "Content-Type": "application/json",
     };
 
-    
 
     // Função para fazer uma única requisição de pedidos por página
     const buscarPedidosPorPagina = async (pagina) => {
@@ -140,7 +83,7 @@ export const buscarPedidos = async (identificador, sigla, dataInicio, dataFim) =
           headers: headers,
           params: {
             identificador: identificador,
-            sigla: sigla,
+            siglaOriginal: siglaOriginal,
             dataInicio: dataInicio,
             dataFim: dataFim,
             page: pagina,
@@ -156,31 +99,32 @@ export const buscarPedidos = async (identificador, sigla, dataInicio, dataFim) =
 
     // Criar array de promessas para fazer todas as requisições em paralelo
     //for (let pagina = 1; pagina <= totalPaginas; pagina++) {
-      const pedidos = [];
-      pedidos.push(buscarPedidosPorPagina(1));
+    const pedidos = [];
+    pedidos.push(buscarPedidosPorPagina(1));
 
-      // Aguardar todas as requisições em paralelo
-      const responses = await Promise.all(pedidos);
+    // Aguardar todas as requisições em paralelo
+    const responses = await Promise.all(pedidos);
 
-      // Extrair os pedidos de todas as respostas
-      const todosPedidos = responses.flatMap(response => response.data.pedidos);
+    // Extrair os pedidos de todas as respostas
+    const todosPedidos = responses.flatMap(response => response.data.pedidos);
 
-      const novasCotacoes = await realizarNovasCotacoes(todosPedidos);
 
-      // Persistir os pedidos recalculados no banco de dados usando o Prisma
-      // const pedidosPersistidos = await prisma.pedido.createMany({
-      //   data: novasCotacoes,
-      //   // Defina aqui os campos que você precisa mapear entre a resposta da API
-      //   // e o modelo Pedido do Prisma
-      //   // Exemplo:
-      //   // {
-      //   //   data: new Date(pedido.data),
-      //   //   valorTotal: pedido.valorTotal,
-      //   //   ...
-      //   // }
-      // });
+    const novasCotacoes = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao);
 
-      //todosPedidosRecalculados.push(...pedidosPersistidos);
+    // Persistir os pedidos recalculados no banco de dados usando o Prisma
+    // const pedidosPersistidos = await prisma.pedido.createMany({
+    //   data: novasCotacoes,
+    //   // Defina aqui os campos que você precisa mapear entre a resposta da API
+    //   // e o modelo Pedido do Prisma
+    //   // Exemplo:
+    //   // {
+    //   //   data: new Date(pedido.data),
+    //   //   valorTotal: pedido.valorTotal,
+    //   //   ...
+    //   // }
+    // });
+
+    //todosPedidosRecalculados.push(...pedidosPersistidos);
     //}
 
     //return todosPedidosRecalculados;
@@ -191,6 +135,66 @@ export const buscarPedidos = async (identificador, sigla, dataInicio, dataFim) =
     fs.writeFileSync('LogErro.json', deuMerda);
     throw error; // Rejeita a promessa com o erro capturado
   }
+}
+
+
+
+
+const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
+  let pedidosRecalculados = [];
+
+  try {
+    // Iterar sobre os pedidos
+    for (let pedido of pedidos) {
+      // Extrair os dados necessários
+      const {
+        cepOrigem,
+        cepDestino,
+        dimensaoCalculo,
+        valorDeclarado,
+        produtos,
+      } = pedido;
+
+      // TRATAR SIGLAS DE COTAÇÕES CASO TENHAM, QUEBRAR NOS ARRAYS E PASSAR PARA TABCHAVES
+      //
+      //
+
+      // Preencher a variável tabChave com os valores adequados
+      const tabChave = siglasNovaCotacao.split(',');
+      console.log('estou antes do for')
+
+      for (let sigla of tabChave) {
+        console.log(sigla)
+        // Formatar os dados conforme necessário para enviar ao segundo endpoint
+        let payload = {
+          cepOrigem: cepOrigem,
+          cepDestino: cepDestino,
+          dimensaoCalculo: dimensaoCalculo,
+          valorDeclarado: valorDeclarado,
+          produtos: produtos,
+          tabChave: [sigla]
+        };
+
+        const headers = {
+          "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
+          "Content-Type": "application/json",
+        };
+
+        // Enviar os dados formatados para o segundo endpoint
+        const response = await axios.post('https://api-transporte.magazord.com.br/api/v1/calculoFreteAnalise', payload, { headers })
+          .then(response => {
+            pedidosRecalculados.push(response.data);
+          })
+          .catch(error => {
+            console.log('Deu merda ao refazer cotações: ', error);
+          });
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao processar pedidos:', error);
+  }
+
+  return pedidosRecalculados;
 }
 
 

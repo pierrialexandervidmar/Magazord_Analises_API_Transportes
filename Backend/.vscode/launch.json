@@ -5,8 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach by Process ID",
-            "processId": "${command:PickProcess}",
+            "name": "Attach by process ID",
+            "program": "${command:PickProcess}",
             "request": "attach",
             "skipFiles": [
                 "<node_internals>/**"
