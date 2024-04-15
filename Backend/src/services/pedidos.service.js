@@ -66,6 +66,7 @@ export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, d
 export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null) => {
   let totalPaginas = Infinity;
   let todosPedidosRecalculados = [];
+  let novasCotacoes = []; // Declare a variável fora do loop
 
   try {
     const pedidosPorPagina = 50;
@@ -74,8 +75,6 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       "Content-Type": "application/json",
     };
 
-
-    // Função para fazer uma única requisição de pedidos por página
     const buscarPedidosPorPagina = async (pagina) => {
       return axios.get(
         "https://api-transporte.magazord.com.br/api/rastreio/notaFiscal/pedidoCalculo",
@@ -93,49 +92,30 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       );
     };
 
-    // Calcular o número total de páginas antes de fazer as requisições
-    //const primeiraResposta = await buscarPedidosPorPagina(1);
-    //totalPaginas = Math.ceil(primeiraResposta.data.totalPages);
+    const primeiraResposta = await buscarPedidosPorPagina(1);
+    totalPaginas = Math.ceil(primeiraResposta.data.totalPages);
 
-    // Criar array de promessas para fazer todas as requisições em paralelo
-    //for (let pagina = 1; pagina <= totalPaginas; pagina++) {
-    const pedidos = [];
-    pedidos.push(buscarPedidosPorPagina(1));
+    for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+      const pedidos = [];
+      pedidos.push(buscarPedidosPorPagina(pagina));
+      console.log(totalPaginas)
+      console.log(pagina)
+      
+      const responses = await Promise.all(pedidos);
+      const todosPedidos = responses.flatMap(response => response.data.pedidos);
 
-    // Aguardar todas as requisições em paralelo
-    const responses = await Promise.all(pedidos);
+      novasCotacoes.push(...await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao));
+    }
 
-    // Extrair os pedidos de todas as respostas
-    const todosPedidos = responses.flatMap(response => response.data.pedidos);
-
-
-    const novasCotacoes = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao);
-
-    // Persistir os pedidos recalculados no banco de dados usando o Prisma
-    // const pedidosPersistidos = await prisma.pedido.createMany({
-    //   data: novasCotacoes,
-    //   // Defina aqui os campos que você precisa mapear entre a resposta da API
-    //   // e o modelo Pedido do Prisma
-    //   // Exemplo:
-    //   // {
-    //   //   data: new Date(pedido.data),
-    //   //   valorTotal: pedido.valorTotal,
-    //   //   ...
-    //   // }
-    // });
-
-    //todosPedidosRecalculados.push(...pedidosPersistidos);
-    //}
-
-    //return todosPedidosRecalculados;
-    return novasCotacoes
-
+    return novasCotacoes;
+    
   } catch (error) {
     const deuMerda = JSON.stringify(error);
     fs.writeFileSync('LogErro.json', deuMerda);
-    throw error; // Rejeita a promessa com o erro capturado
+    throw error;
   }
 }
+
 
 
 
