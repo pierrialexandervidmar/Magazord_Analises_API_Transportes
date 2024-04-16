@@ -6,6 +6,8 @@
 
 4. Enviar os dados formatados para o segundo endpoint. - OK
 	- Neste momento deve ser enviado uma requisição para cada sigla informada na propriedade tabChave. - OK
-	- Preparar paginação, para cada página repetir o processo.
+	- Preparar paginação, para cada página repetir o processo. - OK
+	- Validar tempo de requisição - OK
+	- 
 
 5. Receber a resposta do segundo endpoint e manipulá-la conforme necessário.

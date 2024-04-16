@@ -1,5 +1,6 @@
 import axios from 'axios';
 import fs from 'fs';
+import arrayToCsv from 'arrays-to-csv';
 
 export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFim) => {
   const pedidos = [];
@@ -66,7 +67,9 @@ export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, d
 export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null) => {
   let totalPaginas = Infinity;
   let todosPedidosRecalculados = [];
-  let novasCotacoes = []; // Declare a variável fora do loop
+  let novasCotacoes = [];
+  console.log('Iniciado, deus nos ajude');
+  console.time("tempoRequisicao");
 
   try {
     const pedidosPorPagina = 50;
@@ -100,23 +103,28 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       pedidos.push(buscarPedidosPorPagina(pagina));
       console.log(totalPaginas)
       console.log(pagina)
-      
+
       const responses = await Promise.all(pedidos);
       const todosPedidos = responses.flatMap(response => response.data.pedidos);
 
       novasCotacoes.push(...await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao));
     }
 
-    return novasCotacoes;
+    // // Converter o array de pedidos em uma string formatada
+    const pedidosString = JSON.stringify(novasCotacoes, null, 2);
+
+    // // Escrever a string em um arquivo de texto
+    fs.writeFileSync('pedidos.json', pedidosString);
     
+    console.timeEnd("tempoRequisicao");
+    return novasCotacoes;
+
   } catch (error) {
     const deuMerda = JSON.stringify(error);
     fs.writeFileSync('LogErro.json', deuMerda);
     throw error;
   }
 }
-
-
 
 
 
@@ -135,17 +143,16 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
         produtos,
       } = pedido;
 
-      // TRATAR SIGLAS DE COTAÇÕES CASO TENHAM, QUEBRAR NOS ARRAYS E PASSAR PARA TABCHAVES
+      // TRATAR SIGLAS DE COTAÇÕES CASO TENHAM, SIGLAS INVÁLIDAS, QUEBRAR NOS ARRAYS E PASSAR PARA TABCHAVES
       //
       //
 
       // Preencher a variável tabChave com os valores adequados
       const tabChave = siglasNovaCotacao.split(',');
-      console.log('estou antes do for')
 
       for (let sigla of tabChave) {
         console.log(sigla)
-        // Formatar os dados conforme necessário para enviar ao segundo endpoint
+
         let payload = {
           cepOrigem: cepOrigem,
           cepDestino: cepDestino,
