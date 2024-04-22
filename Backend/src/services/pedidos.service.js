@@ -1,6 +1,6 @@
+import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
-import arrayToCsv from 'arrays-to-csv';
 
 export const buscarPedidosFiltrados = async (identificador, sigla, dataInicio, dataFim) => {
   const pedidos = [];
@@ -68,6 +68,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
   let totalPaginas = Infinity;
   let todosPedidosRecalculados = [];
   let novasCotacoes = [];
+
   console.log('Iniciado, deus nos ajude');
   console.time("tempoRequisicao");
 
@@ -98,6 +99,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
     const primeiraResposta = await buscarPedidosPorPagina(1);
     totalPaginas = Math.ceil(primeiraResposta.data.totalPages);
 
+
     for (let pagina = 1; pagina <= totalPaginas; pagina++) {
       const pedidos = [];
       pedidos.push(buscarPedidosPorPagina(pagina));
@@ -107,15 +109,19 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       const responses = await Promise.all(pedidos);
       const todosPedidos = responses.flatMap(response => response.data.pedidos);
 
-      novasCotacoes.push(...await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao));
+      novasCotacoes.push(...await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao))
+
     }
 
     // // Converter o array de pedidos em uma string formatada
     const pedidosString = JSON.stringify(novasCotacoes, null, 2);
-
     // // Escrever a string em um arquivo de texto
     fs.writeFileSync('pedidos.json', pedidosString);
-    
+
+    // Gerar CSV dos dados das Novas Cotações
+    gerarCSVCotacoes(novasCotacoes);
+
+
     console.timeEnd("tempoRequisicao");
     return novasCotacoes;
 
@@ -184,6 +190,27 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
   return pedidosRecalculados;
 }
 
+
+
+const gerarCSVCotacoes = (novasCotacoes) => {
+  // Extrair apenas as informações necessárias do destino e do serviço (código e valor)
+  const novoObjeto = novasCotacoes.map(cotacao => {
+    return {
+      destino: cotacao.destino,
+      servicos: cotacao.servicos.map(servico => {
+        return {
+          codigo: servico.codigo,
+          valor: servico.valor
+        };
+      })
+    };
+  });
+
+  // Converter o novo objeto em uma string formatada
+  const novoObjetoString = JSON.stringify(novoObjeto, null, 2);
+  // Escrever a string em um arquivo de texto
+  fs.writeFileSync('novoObjeto.json', novoObjetoString);
+}
 
 
 
