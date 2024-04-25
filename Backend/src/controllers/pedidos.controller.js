@@ -1,4 +1,5 @@
 import { buscarPedidos } from '../services/pedidos.service.js'
+import fs from 'fs';
 
 // export const getPedidosFiltrados = async (req, res) => {
 //   const identificador = req.query.identificador;
@@ -47,6 +48,7 @@ export const getRefazCotacoes = async (req, res) => {
     dataFim
   ) {
     try {
+
       const pedidos = await buscarPedidos(identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null);
 
       res.status(200).json(pedidos);

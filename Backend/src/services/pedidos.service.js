@@ -1,8 +1,8 @@
 import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
-import { gerarCSVCotacoes } from '../helpers/utilsPedidos.js'
-import { salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
+import { gerarCSVCotacoes, recriarBancoDados } from '../helpers/utilsPedidos.js'
+import { salvarPedidosRecalculados, gerarCSV } from '../repositories/pedidos.repository.js';
 
 
 /**
@@ -30,6 +30,12 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       "Content-Type": "application/json",
     };
 
+
+    /**
+     * Função para buscar pedidos por página.
+     * @param {number} pagina - O número da página a ser buscada.
+     * @returns {Promise} Uma Promise que retorna os dados da solicitação de busca de pedidos.
+     */
     const buscarPedidosPorPagina = async (pagina) => {
       const headers = {
         "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
@@ -56,33 +62,39 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
     const primeiraResposta = await buscarPedidosPorPagina(1);
     totalPaginas = Math.ceil(primeiraResposta.data.totalPages);
 
-    // Loop para buscar todas as páginas
+    recriarBancoDados();
+
+    // Loop para buscar todas as páginas de pedidos e realizar novas cotações
     for (let pagina = 1; pagina <= totalPaginas; pagina++) {
 
       console.log(totalPaginas)
       console.log(pagina)
 
+      // Busca os pedidos da página atual
       const response = await buscarPedidosPorPagina(pagina);
       const todosPedidos = response.data.pedidos;
-      const novasCotacoesPagina = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao);
 
-      // const paginaString = JSON.stringify(novasCotacoesPagina, null, 2);
-      // fs.writeFileSync('paginaString.json', paginaString);
+      // Realiza novas cotações para os pedidos da página atual
+      const novasCotacoesPagina = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao);
 
       // Salva os pedidos recalculados no banco de dados após cada página
       await salvarPedidosRecalculados(novasCotacoesPagina);
 
-      novasCotacoes = novasCotacoes.concat(novasCotacoesPagina);
+      // // Concatena as novas cotações da página atual ao array geral de novas cotações
+      // novasCotacoes = novasCotacoes.concat(novasCotacoesPagina);
     }
 
-    // Converter o array de pedidos em uma string formatada
-    const pedidosString = JSON.stringify(novasCotacoes, null, 2);
+    //exportarDestinosEServicosComoCSV()
+    gerarCSV()
 
-    // Escrever a string em um arquivo de texto
-    fs.writeFileSync('pedidos.json', pedidosString);
+    // // Converter o array de pedidos em uma string formatada
+    // const pedidosString = JSON.stringify(novasCotacoes, null, 2);
 
-    // Gerar CSV dos dados das Novas Cotações
-    gerarCSVCotacoes(novasCotacoes);
+    // // Escrever a string em um arquivo de texto
+    // fs.writeFileSync('pedidos.json', pedidosString);
+
+    // // Gerar CSV dos dados das Novas Cotações
+    // gerarCSVCotacoes(novasCotacoes);
 
     console.timeEnd("tempoRequisicao");
     return novasCotacoes;
