@@ -21,25 +21,4 @@ export const gerarCSVCotacoes = (novasCotacoes) => {
   fs.writeFileSync('novoObjeto.json', novoObjetoString);
 };
 
-// Função para buscar pedidos por página
-export const buscarPedidosPorPagina = async (identificador, siglaOriginal, dataInicio, dataFim, pagina, pedidosPorPagina) => {
-  const headers = {
-    "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
-    "Content-Type": "application/json",
-  };
 
-  return axios.get(
-    "https://api-transporte.magazord.com.br/api/rastreio/notaFiscal/pedidoCalculo",
-    {
-      headers: headers,
-      params: {
-        identificador,
-        siglaOriginal,
-        dataInicio,
-        dataFim,
-        page: pagina,
-        offset: pedidosPorPagina,
-      },
-    }
-  );
-};

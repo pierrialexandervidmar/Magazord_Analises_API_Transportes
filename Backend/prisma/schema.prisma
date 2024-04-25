@@ -10,23 +10,47 @@ datasource db {
   url      = "file:dev.db"
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
+// model User {
+//   id       Int    @id @default(autoincrement())
+//   name     String
+//   email    String @unique
+//   password String
+// }
+
+// model Sales {
+//   id                   Int     @id @default(autoincrement())
+//   coin                 String
+//   date_purchase        String
+//   value_purchase       Float
+//   unity_purchase       Float
+//   total_money_purchase Float
+//   value_sale           Float?
+//   date_sale            String?
+//   unity_sale           Int?
+//   total_money_sale     Float?
+//   profit               Float?
+// }
+
+model Destino {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  servicos Servico[]
 }
 
-model Sales {
-  id                   Int     @id @default(autoincrement())
-  coin                 String
-  date_purchase        String
-  value_purchase       Float
-  unity_purchase       Float
-  total_money_purchase Float
-  value_sale           Float?
-  date_sale            String?
-  unity_sale           Int?
-  total_money_sale     Float?
-  profit               Float?
+model ServicoDetalhe {
+  id        Int     @id @default(autoincrement())
+  detalhes  String // Armazenamento do campo detalhes como uma string
+  servico   Servico @relation(fields: [servicoId], references: [id])
+  servicoId Int
+}
+
+model Servico {
+  id             Int              @id @default(autoincrement())
+  codigo         String
+  valor          Float
+  prazo          Int
+  prazoFinal     Int
+  destino        Destino          @relation(fields: [destinoId], references: [id])
+  destinoId      Int
+  ServicoDetalhe ServicoDetalhe[]
 }

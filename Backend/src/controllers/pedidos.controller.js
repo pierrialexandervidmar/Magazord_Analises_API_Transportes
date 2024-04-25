@@ -1,7 +1,4 @@
-import { 
-  //buscarPedidosFiltrados, 
-  buscarPedidos 
-} from '../services/pedidos.service.js'
+import { buscarPedidos } from '../services/pedidos.service.js'
 
 // export const getPedidosFiltrados = async (req, res) => {
 //   const identificador = req.query.identificador;

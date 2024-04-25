@@ -1,8 +1,8 @@
 import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
-import { gerarCSVCotacoes, buscarPedidosPorPagina } from '../helpers/utilsPedidos.js'
-//import { salvarPedidosRecalculados } from '../repositories/pedidos.repository';
+import { gerarCSVCotacoes } from '../helpers/utilsPedidos.js'
+import { salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
 
 /**
@@ -30,19 +30,49 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       "Content-Type": "application/json",
     };
 
+    const buscarPedidosPorPagina = async (pagina) => {
+      const headers = {
+        "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
+        "Content-Type": "application/json",
+      };
+
+      return axios.get(
+        "https://api-transporte.magazord.com.br/api/rastreio/notaFiscal/pedidoCalculo",
+        {
+          headers: headers,
+          params: {
+            identificador,
+            siglaOriginal,
+            dataInicio,
+            dataFim,
+            page: pagina,
+            offset: pedidosPorPagina,
+          },
+        }
+      );
+    };
+
     // Busca da primeira página
     const primeiraResposta = await buscarPedidosPorPagina(1);
     totalPaginas = Math.ceil(primeiraResposta.data.totalPages);
 
     // Loop para buscar todas as páginas
     for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+
+      console.log(totalPaginas)
+      console.log(pagina)
+
       const response = await buscarPedidosPorPagina(pagina);
       const todosPedidos = response.data.pedidos;
-      novasCotacoes = novasCotacoes.concat(await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao));
+      const novasCotacoesPagina = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao);
 
+      // const paginaString = JSON.stringify(novasCotacoesPagina, null, 2);
+      // fs.writeFileSync('paginaString.json', paginaString);
 
       // Salva os pedidos recalculados no banco de dados após cada página
-      //await salvarPedidosRecalculados(novasCotacoes);
+      await salvarPedidosRecalculados(novasCotacoesPagina);
+
+      novasCotacoes = novasCotacoes.concat(novasCotacoesPagina);
     }
 
     // Converter o array de pedidos em uma string formatada
@@ -115,8 +145,3 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
 
   return pedidosRecalculados;
 };
-
-
-
-
-
