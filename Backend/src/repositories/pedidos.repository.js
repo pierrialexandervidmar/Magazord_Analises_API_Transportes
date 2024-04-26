@@ -70,13 +70,13 @@ export const gerarCSV = async () => {
           });
       });
 
-      // Escreva os dados no arquivo CSV
+      // Escrevemos os dados no arquivo CSV
       await csvWriter.writeRecords(registrosCSV);
       console.log('Arquivo CSV gerado com sucesso');
   } catch (error) {
       console.error('Erro ao gerar o arquivo CSV:', error);
   } finally {
-      // Feche a conexão com o Prisma após a escrita dos dados no arquivo CSV
+      // Fechar a conexão com o Prisma após a escrita dos dados no arquivo CSV
       await prisma.$disconnect();
   }
 };
