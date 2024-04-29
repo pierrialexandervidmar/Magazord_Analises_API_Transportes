@@ -1,9 +1,9 @@
 import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
-import { gerarCSVCotacoes, recriarBancoDados } from '../helpers/utilsPedidos.js'
-import { salvarPedidosRecalculados, gerarCSV } from '../repositories/pedidos.repository.js';
 
+import { recriarBancoDados } from '../helpers/utilsPedidos.js'
+import { gerarCSV, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
 /**
  * Busca pedidos com base nos parâmetros fornecidos.
@@ -128,6 +128,7 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
 
       // Itera sobre as siglas de cotação
       for (let sigla of tabChave) {
+        console.log(sigla)
         let payload = {
           cepOrigem,
           cepDestino,
