@@ -17,11 +17,11 @@ datasource db {
 //   password String
 // }
 
-
 model Destino {
-  id       Int       @id @default(autoincrement())
-  nome     String
-  servicos Servico[]
+  id           Int       @id @default(autoincrement())
+  nome         String
+  codigoPedido String
+  servicos     Servico[]
 }
 
 model ServicoDetalhe {

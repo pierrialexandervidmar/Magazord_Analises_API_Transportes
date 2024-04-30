@@ -1,9 +1,9 @@
 import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
+import { gerarCSVCotacoes, recriarBancoDados } from '../helpers/utilsPedidos.js'
+import { salvarPedidosRecalculados, gerarCSV } from '../repositories/pedidos.repository.js';
 
-import { recriarBancoDados } from '../helpers/utilsPedidos.js'
-import { gerarCSV, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
 /**
  * Busca pedidos com base nos parâmetros fornecidos.
@@ -121,17 +121,18 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
   try {
     for (let pedido of pedidos) {
       // Extrai os dados necessários do pedido
-      const { cepOrigem, cepDestino, dimensaoCalculo, valorDeclarado, produtos } = pedido;
+      const { cepOrigem, cepDestino, codigoPedido, dimensaoCalculo, valorDeclarado, produtos } = pedido;
 
       // Divide as siglas de cotação
       const tabChave = siglasNovaCotacao.split(',');
 
       // Itera sobre as siglas de cotação
       for (let sigla of tabChave) {
-        console.log(sigla)
+        console.log(`Pedido: ${codigoPedido} - Sigla: ${sigla}`)
         let payload = {
           cepOrigem,
           cepDestino,
+          codigoPedido,
           dimensaoCalculo,
           valorDeclarado,
           produtos,
@@ -146,6 +147,7 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
         // Envia os dados formatados para o segundo endpoint
         try {
           const response = await axios.post('https://api-transporte.magazord.com.br/api/v1/calculoFreteAnalise', payload, { headers });
+          response.data.codigoPedido = codigoPedido;
           pedidosRecalculados.push(response.data);
         } catch (error) {
           console.log('Ocorreu um erro ao refazer cotações:', error);
@@ -155,6 +157,5 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
   } catch (error) {
     console.error('Erro ao processar pedidos:', error);
   }
-
   return pedidosRecalculados;
 };
