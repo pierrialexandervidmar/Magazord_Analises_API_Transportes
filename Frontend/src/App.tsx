@@ -78,18 +78,18 @@ export function App() {
 
   // ESTRUTURA RETORNADA AO FRONTEND =========================================================================
   return (
-    <main className="h-screen bg-zinc-950 text-zinc-300 flex flex-col gap-10 items-center justify-center">
+    <main className="h-screen bg-zinc-950 text-zinc-300 flex flex-col gap-10 items-center justify-start">
+      <h1 className="text-emerald-500 text-2xl font-semibold m-5">Análise de cotações</h1>
       <form
         onSubmit={handleSubmit(createUser)}
-        className='flex flex-col gap-4 w-full max-w-xs'
+        className='flex flex-col gap-2 w-full max-w-screen-xl'
       >
 
         {/* FORMULARIO - IDENTIFICADORES */}
         <div className='flex flex-col gap-1'>
           <label htmlFor="name">Identificadores (separados por vírgula)</label>
-          <input
-            type="text"
-            className='border border-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-800 text-white'
+          <textarea
+            className='border border-zinc-600 shadow-sm rounded h-10 px-3 p-1 bg-zinc-800 text-white'
             {...register('identificador')}
           />
           {errors.identificador && <span className='text-red-500 text-sm'>{errors.identificador.message}</span>}
@@ -97,10 +97,10 @@ export function App() {
 
         {/* FORMULARIO - PERÍODO */}
         <div className='flex flex-col gap-1'>
-          <label htmlFor="" className="flex items-center justify-between">
+          <label htmlFor="" className="flex items-center justify-start">
             Período (até 30 dias)
           </label>
-          <div className='flex items-center justify-between gap-1'>
+          <div className='flex items-center justify-start gap-1'>
             <div className='flex gap-1'>
               <input
                 type="date"
@@ -136,6 +136,8 @@ export function App() {
             </button>
           </label>
 
+          {/* RETORNA LISTA DE TABELAS PARA PREENCHER */}
+          <div className='flex flex-wrap gap-5'>
           {fields.map((field, index) => {
             return (
               <div className='flex gap-2' key={field.id}>
@@ -143,7 +145,7 @@ export function App() {
                 <div className='flex flex-2 flex-col gap-1'>
                   <input
                     type="text"
-                    className='w-18 first-letter:border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
+                    className='w-16 first-letter:border text- border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
                     {...register(`tabs.${index}.sigla`)}
                   />
                   {errors.tabs?.[index]?.sigla && <span className='text-red-500 text-sm'>{errors.tabs?.[index]?.sigla.message}</span>}
@@ -170,6 +172,7 @@ export function App() {
               </div>
             )
           })}
+          </div>
 
           {errors.tabs && <span className='text-red-500 text-sm'>{errors.tabs.message}</span>}
         </div>
