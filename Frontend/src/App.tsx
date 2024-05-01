@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './styles/global.css';
 
 import { useForm, useFieldArray } from 'react-hook-form';
-import { z } from 'zod'
+import { date, z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 
@@ -14,6 +14,8 @@ const createUserFormSchema = z.object({
       // Remover espaços extras e transformar em maiúsculas
       return identificador.trim().toLowerCase().replace(/\s+/g, '');
     }),
+  dataInicio: z.coerce.date().min(new Date(0), 'Data não pode ser vazia'),
+  dataFim: z.coerce.date().min(new Date(0), 'Data não pode ser vazia'), // Adicionando o campo dataFim
   tabs: z.array(z.object({
     sigla: z.string()
       .nonempty('A sigla é obrigatória')
@@ -22,8 +24,8 @@ const createUserFormSchema = z.object({
       .transform(sigla => {
         return sigla.replace(/\s+/g, '');
       }),
-    idPrazo: z.coerce.number().min(1).max(100),
-    idPreco: z.coerce.number().min(1).max(100),
+    idPrazo: z.coerce.number(),
+    idPreco: z.coerce.number(),
   })).min(1, 'Insira pelo menos uma sigla e/ou tabela')
 })
 
@@ -61,7 +63,16 @@ export function App() {
 
   // ENVIAR DADOS PARA A API
   function createUser(data: any) {
-    setOutput(JSON.stringify(data, null, 2))
+    
+    const adjustedDate = {
+      ...data,
+      dataInicio: data.dataInicio.toISOString().substring(0, 10),
+      dataFim: data.dataFim.toISOString().substring(0, 10)
+    };
+
+    console.log(adjustedDate); // Verificar se as datas estão ajustadas corretamente
+
+    setOutput(JSON.stringify(adjustedDate, null, 2));
   }
 
 
@@ -105,13 +116,13 @@ export function App() {
                 className='border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
                 {...register('dataFim')}
               />
-              {errors.dataInicio && <span className='text-red-500 text-sm'>{errors.dataFim.message}</span>}
+              {errors.dataFim && <span className='text-red-500 text-sm'>{errors.dataFim.message}</span>}
             </div>
           </div>
 
         </div>
 
-        {/* FORMULÁRIO DAS TABELAS */}
+        {/* FORMULÁRIO - TABELAS PARA COTAÇÃO */}
         <div className='flex flex-col gap-1'>
           <label htmlFor="" className="flex items-center justify-between">
             Sigla & Prazo & Preço
@@ -140,18 +151,20 @@ export function App() {
 
                 <div className='flex flex-col gap-1'>
                   <input
-                    type="number"
+                    type="text"
                     className='input-number-tab w-14 appearance-none border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
                     {...register(`tabs.${index}.idPrazo`)}
                   />
+                  {/* {errors.tabs?.[index]?.idPrazo && <span className='text-red-500 text-sm'>{errors.tabs?.[index]?.idPrazo.message}</span>} */}
                 </div>
 
                 <div className='flex flex-col gap-1'>
                   <input
-                    type="number"
+                    type="text"
                     className='input-number-tab w-14 appearance-none border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
                     {...register(`tabs.${index}.idPreco`)}
                   />
+                 {/* {errors.tabs?.[index]?.idPreco && <span className='text-red-500 text-sm'>{errors.tabs?.[index]?.idPreco.message}</span>} */}
                 </div>
 
               </div>
@@ -160,13 +173,13 @@ export function App() {
 
           {errors.tabs && <span className='text-red-500 text-sm'>{errors.tabs.message}</span>}
         </div>
-
         <button
           type='submit'
           className='bg-emerald-500 rounded font-semibold text-white h-10 hover:bg-emerald-600'
         >
           Realizar Cotação
         </button>
+
       </form>
 
       <pre>
