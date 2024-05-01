@@ -1,0 +1,178 @@
+import { useState } from 'react';
+import './styles/global.css';
+
+import { useForm, useFieldArray } from 'react-hook-form';
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+
+// ESQUEMA DO FORMULARIO COM SUAS VALIDAÇÕES DE ENTRADA EMBUTIDAS
+const createUserFormSchema = z.object({
+  identificador: z.string()
+    .nonempty('O identificador é obrigatório')
+    .transform(identificador => {
+      // Remover espaços extras e transformar em maiúsculas
+      return identificador.trim().toLowerCase().replace(/\s+/g, '');
+    }),
+  tabs: z.array(z.object({
+    sigla: z.string()
+      .nonempty('A sigla é obrigatória')
+      .toUpperCase()
+      .trim()
+      .transform(sigla => {
+        return sigla.replace(/\s+/g, '');
+      }),
+    idPrazo: z.coerce.number().min(1).max(100),
+    idPreco: z.coerce.number().min(1).max(100),
+  })).min(1, 'Insira pelo menos uma sigla e/ou tabela')
+})
+
+type CreateUserFormData = z.infer<typeof createUserFormSchema>
+
+// ESTRUTURA GERAL DO COMPONENTE APP ===================================================================
+export function App() {
+  const [output, setOutput] = useState('')
+
+
+  // UTILIZAÇÃO DO USE-FORM COM SEU TIPO E SCHEMA E VALIDAÇÕES
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control
+  } = useForm<CreateUserFormData>({
+    resolver: zodResolver(createUserFormSchema)
+  })
+
+  // UTILIZAÇÃO DO FIELDARRAY
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'tabs',
+  })
+
+  // FUNÇÃO PARA ADICIONAR NOVA TABELA - TECH
+  function addNewTech() {
+    append({
+      sigla: '',
+      idPrazo: 0,
+      idPreco: 0
+    })
+  }
+
+  // ENVIAR DADOS PARA A API
+  function createUser(data: any) {
+    setOutput(JSON.stringify(data, null, 2))
+  }
+
+
+  // ESTRUTURA RETORNADA AO FRONTEND =========================================================================
+  return (
+    <main className="h-screen bg-zinc-950 text-zinc-300 flex flex-col gap-10 items-center justify-center">
+      <form
+        onSubmit={handleSubmit(createUser)}
+        className='flex flex-col gap-4 w-full max-w-xs'
+      >
+
+        {/* FORMULARIO - IDENTIFICADORES */}
+        <div className='flex flex-col gap-1'>
+          <label htmlFor="name">Identificadores (separados por vírgula)</label>
+          <input
+            type="text"
+            className='border border-zinc-600 shadow-sm rounded h-10 px-3 bg-zinc-800 text-white'
+            {...register('identificador')}
+          />
+          {errors.identificador && <span className='text-red-500 text-sm'>{errors.identificador.message}</span>}
+        </div>
+
+        {/* FORMULARIO - PERÍODO */}
+        <div className='flex flex-col gap-1'>
+          <label htmlFor="" className="flex items-center justify-between">
+            Período (até 30 dias)
+          </label>
+          <div className='flex items-center justify-between gap-1'>
+            <div className='flex gap-1'>
+              <input
+                type="date"
+                className='border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
+                {...register('dataInicio')}
+              />
+              {errors.dataInicio && <span className='text-red-500 text-sm'>{errors.dataInicio.message}</span>}
+            </div>
+            <span>até</span>
+            <div className='flex gap-1'>
+              <input
+                type="date"
+                className='border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
+                {...register('dataFim')}
+              />
+              {errors.dataInicio && <span className='text-red-500 text-sm'>{errors.dataFim.message}</span>}
+            </div>
+          </div>
+
+        </div>
+
+        {/* FORMULÁRIO DAS TABELAS */}
+        <div className='flex flex-col gap-1'>
+          <label htmlFor="" className="flex items-center justify-between">
+            Sigla & Prazo & Preço
+
+            <button
+              type='button'
+              onClick={addNewTech}
+              className="text-emerald-500 text-sm"
+            >
+              Adicionar
+            </button>
+          </label>
+
+          {fields.map((field, index) => {
+            return (
+              <div className='flex gap-2' key={field.id}>
+
+                <div className='flex flex-2 flex-col gap-1'>
+                  <input
+                    type="text"
+                    className='w-18 first-letter:border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
+                    {...register(`tabs.${index}.sigla`)}
+                  />
+                  {errors.tabs?.[index]?.sigla && <span className='text-red-500 text-sm'>{errors.tabs?.[index]?.sigla.message}</span>}
+                </div>
+
+                <div className='flex flex-col gap-1'>
+                  <input
+                    type="number"
+                    className='input-number-tab w-14 appearance-none border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
+                    {...register(`tabs.${index}.idPrazo`)}
+                  />
+                </div>
+
+                <div className='flex flex-col gap-1'>
+                  <input
+                    type="number"
+                    className='input-number-tab w-14 appearance-none border border-zinc-600 shadow-sm rounded h-8 px-1 bg-zinc-800 text-white'
+                    {...register(`tabs.${index}.idPreco`)}
+                  />
+                </div>
+
+              </div>
+            )
+          })}
+
+          {errors.tabs && <span className='text-red-500 text-sm'>{errors.tabs.message}</span>}
+        </div>
+
+        <button
+          type='submit'
+          className='bg-emerald-500 rounded font-semibold text-white h-10 hover:bg-emerald-600'
+        >
+          Realizar Cotação
+        </button>
+      </form>
+
+      <pre>
+        {output}
+      </pre>
+
+    </main>
+  )
+}
