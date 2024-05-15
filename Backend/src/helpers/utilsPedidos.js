@@ -1,6 +1,6 @@
-import fs from 'fs';
 import axios from 'axios';
 import { exec } from 'child_process';
+import fs from 'fs';
 
 export const gerarCSVCotacoes = (novasCotacoes) => {
   // Extrair apenas as informações necessárias do destino e do serviço (código e valor)
@@ -25,7 +25,7 @@ export const gerarCSVCotacoes = (novasCotacoes) => {
 export const recriarBancoDados = () => {
   try {
     // Excluir o banco de dados SQLite existente
-    fs.unlinkSync('/home/pierri/Projetos/magazord/Magazord_Analises_API_Transportes/Backend/prisma/dev.db');
+    fs.unlinkSync('C:\\Projetos\\Magazord_Analises_API_Transportes\\Backend\\prisma\\dev.db');
     console.log('Banco de dados SQLite excluído com sucesso.');
 
     // Executar as migrations do Prisma para criar o novo banco de dados

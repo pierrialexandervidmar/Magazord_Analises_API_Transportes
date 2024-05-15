@@ -1,9 +1,9 @@
 import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
-import { gerarCSVCotacoes, recriarBancoDados } from '../helpers/utilsPedidos.js'
-import { salvarPedidosRecalculados, gerarCSV } from '../repositories/pedidos.repository.js';
 
+import { gerarCSVCotacoes, recriarBancoDados } from '../helpers/utilsPedidos.js'
+import { gerarCSV, gerarCSVGeral, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
 /**
  * Busca pedidos com base nos parâmetros fornecidos.
@@ -86,6 +86,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
 
     //exportarDestinosEServicosComoCSV()
     gerarCSV()
+    gerarCSVGeral()
 
     // // Converter o array de pedidos em uma string formatada
     // const pedidosString = JSON.stringify(novasCotacoes, null, 2);
