@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { exec } from 'child_process';
+import dotenv from 'dotenv';
 import fs from 'fs';
 
 export const recriarBancoDados = () => {
   try {
     // Excluir o banco de dados SQLite existente
-    fs.unlinkSync('C:\\Projetos\\Magazord_Analises_API_Transportes\\Backend\\prisma\\dev.db');
+    fs.unlinkSync(process.env.DB);
     console.log('Banco de dados SQLite excluído com sucesso.');
 
     // Executar as migrations do Prisma para criar o novo banco de dados

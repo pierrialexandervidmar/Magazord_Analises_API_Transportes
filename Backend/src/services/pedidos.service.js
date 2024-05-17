@@ -79,23 +79,11 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
 
       // Salva os pedidos recalculados no banco de dados após cada página
       await salvarPedidosRecalculados(novasCotacoesPagina);
-
-      // // Concatena as novas cotações da página atual ao array geral de novas cotações
-      // novasCotacoes = novasCotacoes.concat(novasCotacoesPagina);
     }
 
     //exportarDestinosEServicosComoCSV()
     gerarCSV()
     gerarCSVGeral()
-
-    // // Converter o array de pedidos em uma string formatada
-    // const pedidosString = JSON.stringify(novasCotacoes, null, 2);
-
-    // // Escrever a string em um arquivo de texto
-    // fs.writeFileSync('pedidos.json', pedidosString);
-
-    // // Gerar CSV dos dados das Novas Cotações
-    // gerarCSVCotacoes(novasCotacoes);
 
     console.timeEnd("tempoRequisicao");
     return novasCotacoes;
