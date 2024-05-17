@@ -2,7 +2,7 @@ import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
 import fs from 'fs';
 
-import { gerarCSVCotacoes, recriarBancoDados } from '../helpers/utilsPedidos.js'
+import { recriarBancoDados } from '../helpers/utilsPedidos.js'
 import { gerarCSV, gerarCSVGeral, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
 /**
