@@ -1,5 +1,6 @@
 import arrayToCsv from 'arrays-to-csv';
 import axios from 'axios';
+import dotenv from 'dotenv';
 import fs from 'fs';
 
 import { recriarBancoDados } from '../helpers/utilsPedidos.js'
@@ -43,7 +44,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       };
 
       return axios.get(
-        "https://api-transporte.magazord.com.br/api/rastreio/notaFiscal/pedidoCalculo",
+        process.env.URL_BASE + "/api/rastreio/notaFiscal/pedidoCalculo",
         {
           headers: headers,
           params: {
@@ -135,7 +136,7 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
 
         // Envia os dados formatados para o segundo endpoint
         try {
-          const response = await axios.post('https://api-transporte.magazord.com.br/api/v1/calculoFreteAnalise', payload, { headers });
+          const response = await axios.post(process.env.URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
           response.data.codigoPedido = codigoPedido;
           pedidosRecalculados.push(response.data);
         } catch (error) {
