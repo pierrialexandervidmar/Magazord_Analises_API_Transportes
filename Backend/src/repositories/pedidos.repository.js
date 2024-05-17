@@ -46,8 +46,6 @@ export const salvarPedidosRecalculados = async (pedidosRecalculados) => {
   }
 };
 
-
-
 // Crie uma instância do objeto CSV Writer e defina o cabeçalho do CSV
 const csvWriter = createObjectCsvWriter({
   path: 'cotacoes_vencedoras.csv',
