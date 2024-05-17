@@ -5,9 +5,14 @@ import { prisma } from "../services/prisma.js";
 export const salvarPedidosRecalculados = async (pedidosRecalculados) => {
   try {
     for (const pedido of pedidosRecalculados) {
+
+      const localidade = pedido.destino;
+      const [cidade, uf] = localidade.split("/");
+
       const destino = await prisma.destino.create({
         data: {
-          nome: pedido.destino,
+          cidade: cidade,
+          uf: uf,
           codigoPedido: pedido.codigoPedido
         },
       });
@@ -49,7 +54,8 @@ const csvWriter = createObjectCsvWriter({
   fieldDelimiter: ";",
   header: [
     { id: 'codigoPedido', title: 'Código do Pedido' },
-    { id: 'nomeDestino', title: 'Nome do destino' },
+    { id: 'cidadeDestino', title: 'Cidade do destino' },
+    { id: 'ufDestino', title: 'UF do destino' },
     { id: 'codigoServico', title: 'Código do serviço' },
     { id: 'valor', title: 'Valor' },
     { id: 'prazoFinal', title: 'Prazo Final' }
@@ -61,7 +67,8 @@ const csvWriterGeral = createObjectCsvWriter({
   fieldDelimiter: ";",
   header: [
     { id: 'codigoPedido', title: 'Código do Pedido' },
-    { id: 'nomeDestino', title: 'Nome do destino' },
+    { id: 'cidadeDestino', title: 'Nome do destino' },
+    { id: 'ufDestino', title: 'UF do destino' },
     { id: 'codigoServico', title: 'Código do serviço' },
     { id: 'valor', title: 'Valor' },
     { id: 'prazoFinal', title: 'Prazo Final' }
@@ -72,7 +79,7 @@ export const gerarCSV = async () => {
   try {
     // Consulta SQL para obter os serviços com o menor valor para cada código de pedido
     const menorValorServicos = await prisma.$queryRaw`
-      SELECT d.codigoPedido, s.codigo AS codigoServico, d.nome AS nomeDestino, s.valor, s.prazoFinal
+      SELECT d.codigoPedido, s.codigo AS codigoServico, d.cidade AS cidadeDestino, d.uf AS ufDestino, s.valor, s.prazoFinal
       FROM Destino d
       JOIN Servico s ON d.id = s.destinoId
       WHERE (s.valor, d.id) IN (
@@ -86,7 +93,8 @@ export const gerarCSV = async () => {
     // Formatar os dados para o formato esperado pelo CSV Writer
     const registrosCSV = menorValorServicos.map(servico => ({
       codigoPedido: servico.codigoPedido,
-      nomeDestino: servico.nomeDestino,
+      cidadeDestino: servico.cidadeDestino,
+      ufDestino: servico.ufDestino,
       codigoServico: servico.codigoServico,
       valor: servico.valor,
       prazoFinal: servico.prazoFinal
@@ -107,7 +115,7 @@ export const gerarCSVGeral = async () => {
   try {
     // Consulta SQL para obter os serviços com o menor valor para cada código de pedido
     const menorValorServicos = await prisma.$queryRaw`
-      SELECT d.codigoPedido, s.codigo AS codigoServico, d.nome AS nomeDestino, s.valor, s.prazoFinal
+      SELECT d.codigoPedido, s.codigo AS codigoServico, d.cidade AS cidadeDestino, d.uf AS ufDestino, s.valor, s.prazoFinal
       FROM Destino d
       JOIN Servico s ON d.id = s.destinoId
     `;
@@ -115,7 +123,8 @@ export const gerarCSVGeral = async () => {
     // Formatar os dados para o formato esperado pelo CSV Writer
     const registrosCSV = menorValorServicos.map(servico => ({
       codigoPedido: servico.codigoPedido,
-      nomeDestino: servico.nomeDestino,
+      cidadeDestino: servico.cidadeDestino,
+      ufDestino: servico.ufDestino,
       codigoServico: servico.codigoServico,
       valor: servico.valor,
       prazoFinal: servico.prazoFinal

@@ -1,7 +1,8 @@
 -- CreateTable
 CREATE TABLE "Destino" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "nome" TEXT NOT NULL,
+    "cidade" TEXT NOT NULL,
+    "uf" TEXT NOT NULL,
     "codigoPedido" TEXT NOT NULL
 );
 

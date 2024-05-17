@@ -19,7 +19,8 @@ datasource db {
 
 model Destino {
   id           Int       @id @default(autoincrement())
-  nome         String
+  cidade       String
+  uf           String
   codigoPedido String
   servicos     Servico[]
 }
