@@ -6,6 +6,9 @@ import fs from 'fs';
 import { recriarBancoDados } from '../helpers/utilsPedidos.js'
 import { gerarCSV, gerarCSVGeral, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
+const URL_BASE_PROD='https://api-transporte.magazord.com.br'
+const URL_BASE='https://api-transporte-staging.magazord.com.br'
+
 /**
  * Busca pedidos com base nos parâmetros fornecidos.
  *
@@ -44,7 +47,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       };
 
       return axios.get(
-        process.env.URL_BASE + "/api/rastreio/notaFiscal/pedidoCalculo",
+        URL_BASE_PROD + "/api/rastreio/notaFiscal/pedidoCalculo",
         {
           headers: headers,
           params: {
@@ -136,7 +139,7 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
 
         // Envia os dados formatados para o segundo endpoint
         try {
-          const response = await axios.post(process.env.URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
+          const response = await axios.post(URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
           response.data.codigoPedido = codigoPedido;
           pedidosRecalculados.push(response.data);
         } catch (error) {
