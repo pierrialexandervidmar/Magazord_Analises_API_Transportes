@@ -152,3 +152,5 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
   }
   return pedidosRecalculados;
 };
+
+

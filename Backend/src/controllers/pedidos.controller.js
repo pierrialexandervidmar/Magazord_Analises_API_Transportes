@@ -32,3 +32,15 @@ export const getRefazCotacoes = async (req, res) => {
   }
 }
 
+
+
+export const getCotacoesVencedorasDados = async(req, res) {
+
+}
+
+
+
+export const getCotacoesGeraisDados = async(req, res) {
+  
+}
+
