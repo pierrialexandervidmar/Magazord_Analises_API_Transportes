@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 
 import { recriarBancoDados } from '../helpers/utilsPedidos.js'
-import { gerarCSV, gerarCSVGeral, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
+import { gerarCSV, gerarCSVGeral, salvarPedidosRecalculados, cotacoesGerais } from '../repositories/pedidos.repository.js';
 
 const URL_BASE_PROD='https://api-transporte.magazord.com.br'
 const URL_BASE='https://api-transporte-staging.magazord.com.br'
@@ -152,5 +152,9 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
   }
   return pedidosRecalculados;
 };
+
+export const buscaCotacoesGerais = async () => {
+  return await cotacoesGerais();
+}
 
 
