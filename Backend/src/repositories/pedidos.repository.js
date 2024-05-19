@@ -109,6 +109,43 @@ export const cotacoesVencedoras = async () => {
   }
 }
 
+export const cotacoesVencedorasQuantitativos = async () => {
+  try {
+    const cotacoes = await prisma.$queryRaw`
+      SELECT 
+          s.codigo AS codigoServico, 
+          COUNT(*) AS quantidade,
+          AVG(s.prazoFinal) AS mediaPrazoEntrega
+      FROM 
+          Destino d
+          JOIN Servico s ON d.id = s.destinoId
+      WHERE 
+          (s.valor, d.id) IN (
+              SELECT MIN(s.valor), s.destinoId
+              FROM Servico s
+              JOIN Destino d ON s.destinoId = d.id
+              GROUP BY d.codigoPedido
+          )
+      GROUP BY 
+          s.codigo;
+    `;
+
+    const registrosProntos = cotacoes.map(servico => ({
+      codigoServico: servico.codigoServico,
+      quantidade: Number(servico.quantidade),
+      mediaPrazoEntrega: servico.mediaPrazoEntrega
+    }));
+
+    console.log(registrosProntos)
+    return registrosProntos
+
+  } catch (error) {
+    console.error('Erro:', error);
+  } finally {
+    // Fechar a conexão com o Prisma
+    await prisma.$disconnect();
+  }
+}
 
 
 
