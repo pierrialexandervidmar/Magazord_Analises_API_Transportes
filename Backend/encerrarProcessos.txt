@@ -1,0 +1,3 @@
+netstat -a -n -o
+
+taskkill /F /PID PORTA
