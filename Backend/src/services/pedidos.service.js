@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 
 import { recriarBancoDados } from '../helpers/utilsPedidos.js'
-import { gerarCSV, gerarCSVGeral, salvarPedidosRecalculados, cotacoesGerais, cotacoesVencedoras, cotacoesVencedorasQuantitativos } from '../repositories/pedidos.repository.js';
+import { cotacoesGerais, cotacoesVencedoras, cotacoesVencedorasQuantitativos, gerarCSV, gerarCSVGeral, salvarPedidosRecalculados } from '../repositories/pedidos.repository.js';
 
-const URL_BASE_PROD='https://api-transporte.magazord.com.br'
-const URL_BASE='https://api-transporte-staging.magazord.com.br'
+const URL_BASE_PROD = 'https://api-transporte.magazord.com.br'
+const URL_BASE = 'https://api-transporte-staging.magazord.com.br'
 
 /**
  * Busca pedidos com base nos parâmetros fornecidos.
@@ -19,7 +19,7 @@ const URL_BASE='https://api-transporte-staging.magazord.com.br'
  * @param {string} [siglaOriginal=null] - A sigla original, opcional.
  * @returns {Array} - Um array contendo os pedidos encontrados.
  */
-export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null) => {
+export const buscarPedidos = async (identificador, siglasNovaCotacao, siglasTansportadorasWebservice, tokenCliente, dataInicio, dataFim, siglaOriginal = null) => {
   // Inicializações
   let totalPaginas = Infinity;
   let novasCotacoes = [];
@@ -79,7 +79,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
       const todosPedidos = response.data.pedidos;
 
       // Realiza novas cotações para os pedidos da página atual
-      const novasCotacoesPagina = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao);
+      const novasCotacoesPagina = await realizarNovasCotacoes(todosPedidos, siglasNovaCotacao, siglasTansportadorasWebservice, tokenCliente);
 
       // Salva os pedidos recalculados no banco de dados após cada página
       await salvarPedidosRecalculados(novasCotacoesPagina);
@@ -108,7 +108,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
  * @param {string} siglasNovaCotacao - As siglas das novas cotações, separadas por vírgula.
  * @returns {Array} - Um array contendo os pedidos recalculados.
  */
-const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
+const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao, siglasTansportadorasWebservice, tokenCliente) => {
   let pedidosRecalculados = [];
 
   try {
@@ -118,6 +118,8 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
 
       // Divide as siglas de cotação
       const tabChave = siglasNovaCotacao.split(',');
+
+      const siglasWS = siglasTansportadorasWebservice.split(',');
 
       // Itera sobre as siglas de cotação
       for (let sigla of tabChave) {
@@ -144,6 +146,37 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao) => {
           pedidosRecalculados.push(response.data);
         } catch (error) {
           console.log('Ocorreu um erro ao refazer cotações:', error);
+        }
+      }
+
+      if (siglasTansportadorasWebservice !== null && Array.isArray(siglasWS) && siglasWS.length > 0) {
+        for (let siglaWS of siglasWS) {
+          console.log(`Pedido: ${codigoPedido} - Sigla: ${siglaWS}`)
+          let payload = {
+            cepOrigem,
+            cepDestino,
+            codigoPedido,
+            dimensaoCalculo,
+            valorDeclarado,
+            produtos,
+            tabChave: [],
+            cliente: tokenCliente,
+            servicos: [siglaWS]
+          };
+
+          const headers = {
+            "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
+            "Content-Type": "application/json",
+          };
+
+          // Envia os dados formatados para o segundo endpoint
+          try {
+            const response = await axios.post(URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
+            response.data.codigoPedido = codigoPedido;
+            pedidosRecalculados.push(response.data);
+          } catch (error) {
+            console.log('Ocorreu um erro ao refazer cotações:', error);
+          }
         }
       }
     }

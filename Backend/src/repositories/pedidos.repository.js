@@ -1,8 +1,7 @@
 import { createObjectCsvWriter } from 'csv-writer';
 
+import { formatarValor } from '../helpers/utilsPedidos.js'
 import { prisma } from "../services/prisma.js";
-
-
 
 export const salvarPedidosRecalculados = async (pedidosRecalculados) => {
   try {
@@ -23,9 +22,9 @@ export const salvarPedidosRecalculados = async (pedidosRecalculados) => {
         const novoServico = await prisma.servico.create({
           data: {
             codigo: servico.codigo,
-            valor: servico.valor,
-            prazo: servico.prazo,
-            prazoFinal: servico.prazoFinal,
+            valor: formatarValor(servico.valor),
+            prazo: servico.prazo ?? 1,
+            prazoFinal: servico.prazoFinal ?? 1,
             destino: { connect: { id: destino.id } },
           },
         });

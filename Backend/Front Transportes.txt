@@ -1,0 +1,81 @@
+Cadastrando a pessoa
+{% set repositoryPessoa = em.getRepository('\\Magamobi\\MagaZord\\Model\\Pessoa') %}
+{% set pessoa = repositoryPessoa.findOneBy({"cpfCnpj":"51.415.618/0001-53"}) %}
+{% if pessoa is null %}
+  {% set pessoa = newInstance('\\Magamobi\\MagaZord\\Model\\PessoaJuridica') %}
+  {{ pessoa.setNome('Front Transportes') }}
+  {{ pessoa.setCpfCnpj('51.415.618/0001-53') }}
+  {{ pessoa.setNomeRazaoSocial('Frontelmo Transporte de Carga e Locação LTDA') }}
+  {{ pessoa.setNomeFantasia('Front Transportes') }} 
+  {% for tipo in [1,3] %}
+	{% set pessoaEndereco = pessoa.newPessoaEndereco() %}
+	{{ pessoaEndereco.setNomeDestinatario('Front Transportes')}}
+	{% set cidade = em.find('\\Magamobi\\MagaZord\\Model\\Cidade', 3648) %}
+	{{ pessoaEndereco.setCep('26220130')}}
+	{{ pessoaEndereco.setCidade(cidade)}}
+	{{ pessoaEndereco.setLogradouro('Rua Cabralia')}}
+	{{ pessoaEndereco.setBairro('Califórnia')}}
+	{{ pessoaEndereco.setNumero('97')}}
+	{{ pessoaEndereco.setTipo(tipo)}}  
+	{{ pessoaEndereco.setComplemento('')}}
+  {% endfor %}
+  {{ em.persist(pessoa) }}
+  Pessoa cadastrada
+{% else %}
+Já existia pessoa cadastrada
+{% endif %}
+
+{% set repositoryTransportadora = em.getRepository('\\Magamobi\\MagaZord\\Model\\Transportadora') %}
+
+Cadastrando a Transportadora
+{% set transportadora = repositoryTransportadora.findOneBy({"nome":"Front Transportes"}) %}
+{% if transportadora is null %}
+    {% set transportadora = newInstance('\\Magamobi\\MagaZord\\Model\\Transportadora') %}
+    {{ transportadora.setNome('Front Transportes') }}
+    {{ transportadora.setTipo('34') }}
+    {{ transportadora.setPessoa(pessoa) }}
+    {{ transportadora.getOpcoesGerais().setCodigoRastreioInterno(true) }}
+    {{ transportadora.getOpcoesGerais().setImprimeBarcodeRastreio(true) }}
+    {{ transportadora.getOpcoesGerais().setEnviaNotificacaoPortalTransporte(true)}}
+    {{ transportadora.getOpcoesGerais().setUtilizaEtiquetaPortalTransporte(true) }}
+    {{ em.persist(transportadora) }}
+Cadastrado a Transportadora
+{% else %}
+Transportadora já Cadastrada
+{% endif %}
+
+Cadastrando o servico da Transportadora
+{% set repositoryTransportadoraServico = em.getRepository('\\Magamobi\\MagaZord\\Model\\TransportadoraServico') %}
+{% set transportadoraServico = repositoryTransportadoraServico.findOneBy({"descricao":"Front Transportes"}) %}
+{% if transportadoraServico is null %}
+    {% set transportadoraServico = newInstance('\\Magamobi\\MagaZord\\Model\\TransportadoraServico') %}
+    {{ transportadoraServico.setDescricao('Front Transportes') }}
+    {{ transportadoraServico.setDescricaoSite('Front Transportes') }}
+    {{ transportadoraServico.setTipo('1') }}
+    {{ transportadoraServico.setTransportadora(transportadora) }}
+    {{ transportadoraServico.setSomaFreteValorTotalPedido(true) }}
+    {{ transportadoraServico.setGeraComissaoMarketplace(false) }}
+    {{ em.persist(transportadoraServico) }}
+Cadastrado a Transportadora Servico
+{% else %}
+Transportadora Servico já Cadastrada
+{% endif %}
+
+Cadastrando a Agencia
+{% set repositoryTransportadoraAgencia = em.getRepository('\\Magamobi\\MagaZord\\Model\\TransportadoraAgencia') %}
+{% set transportadoraAgencia = repositoryTransportadoraAgencia.findOneBy({"nome":"Front Transportes"}) %}
+{% if transportadoraAgencia is null %}
+	{% set transportadoraAgencia = newInstance('\\Magamobi\\MagaZord\\Model\\TransportadoraAgencia') %}
+	{{transportadoraAgencia.setTransportadora(transportadora)}}
+	{{transportadoraAgencia.setNome("Front Transportes")}}
+	{{transportadoraAgencia.setPessoa(pessoa)}}
+	{{transportadoraAgencia.getOpcoesGerais().setUsaCalculoUnificado(true)}}
+	{{transportadoraAgencia.getOpcoesPortalTransportes().setTipoCalculoFrete('1')}}
+	{% set transportadoraAgenciaServico = transportadoraAgencia.newTransportadoraAgenciaServico() %}
+	{{transportadoraAgenciaServico.setTransportadoraServico(transportadoraServico)}}
+	{{transportadoraAgenciaServico.setCodigoServico('FRT')}}
+	{{transportadoraAgenciaServico.setPrazoAdicional('1')}}
+	{{transportadoraAgenciaServico.setAtivo(true)}}
+	{{transportadoraAgenciaServico.getConfiguracao().setModalidadeFreteNF(0)}}
+	{{ em.persist(transportadoraAgencia) }}
+{% endif %}

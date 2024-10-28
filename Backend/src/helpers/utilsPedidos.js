@@ -25,3 +25,22 @@ export const recriarBancoDados = () => {
     console.error('Erro ao excluir o banco de dados SQLite:', error);
   }
 }
+
+export const formatarValor = (valor) => {
+  // Verifica se o valor é uma string e converte
+  if (typeof valor === 'string') {
+    // Substitui ',' por '.' para suportar decimais no formato brasileiro e converte para float
+    valor = valor.replace(',', '.');
+    valor = parseFloat(valor);
+  }
+
+  // Verifica se a conversão foi bem-sucedida, caso contrário, retorna NaN
+  if (isNaN(valor)) {
+    console.warn("Valor inválido. Não foi possível converter para número.");
+    return NaN;
+  }
+
+  // Retorna o valor formatado como número com ponto flutuante
+  return valor;
+}
+
