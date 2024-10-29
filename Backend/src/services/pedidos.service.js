@@ -108,54 +108,51 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
  * @param {string} siglasNovaCotacao - As siglas das novas cotações, separadas por vírgula.
  * @returns {Array} - Um array contendo os pedidos recalculados.
  */
-const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao, siglasTansportadorasWebservice, tokenCliente) => {
-  let pedidosRecalculados = [];
+const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao, siglasTransportadorasWebservice, tokenCliente) => {
+  const pedidosRecalculados = [];
+  const headers = {
+    "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
+    "Content-Type": "application/json",
+  };
+
+  const enviarCotacao = async (payload, codigoPedido) => {
+    try {
+      const response = await axios.post(URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
+      response.data.codigoPedido = codigoPedido;
+      pedidosRecalculados.push(response.data);
+    } catch (error) {
+      console.error(`Erro ao refazer cotação para o pedido ${codigoPedido}:`, error);
+    }
+  };
 
   try {
-    for (let pedido of pedidos) {
-      // Extrai os dados necessários do pedido
+    for (const pedido of pedidos) {
       const { cepOrigem, cepDestino, codigoPedido, dimensaoCalculo, valorDeclarado, produtos } = pedido;
+      const siglasCotacao = siglasNovaCotacao.split(',').filter(Boolean);
+      const siglasWS = siglasTransportadorasWebservice ? siglasTransportadorasWebservice.split(',').filter(Boolean) : [];
 
-      // Divide as siglas de cotação
-      const tabChave = siglasNovaCotacao.split(',');
-      let siglasWS = []
+      const promises = [];
 
-      if (siglasTansportadorasWebservice !== null) {
-        siglasWS = siglasTansportadorasWebservice.split(',');
-      }
-
-      // Itera sobre as siglas de cotação
-      for (let sigla of tabChave) {
-        console.log(`Pedido: ${codigoPedido} - Sigla: ${sigla}`)
-        let payload = {
+      // Enviar cotações para siglas novas
+      siglasCotacao.forEach(sigla => {
+        console.log(`Pedido: ${codigoPedido} - Sigla: ${sigla}`);
+        const payload = {
           cepOrigem,
           cepDestino,
           codigoPedido,
           dimensaoCalculo,
           valorDeclarado,
           produtos,
-          tabChave: [sigla]
+          tabChave: [sigla],
         };
+        promises.push(enviarCotacao(payload, codigoPedido));
+      });
 
-        const headers = {
-          "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
-          "Content-Type": "application/json",
-        };
-
-        // Envia os dados formatados para o segundo endpoint
-        try {
-          const response = await axios.post(URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
-          response.data.codigoPedido = codigoPedido;
-          pedidosRecalculados.push(response.data);
-        } catch (error) {
-          console.log('Ocorreu um erro ao refazer cotações:', error);
-        }
-      }
-
-      if (siglasTansportadorasWebservice !== null && Array.isArray(siglasWS) && siglasWS.length > 0) {
-        for (let siglaWS of siglasWS) {
-          console.log(`Pedido: ${codigoPedido} - Sigla: ${siglaWS}`)
-          let payload = {
+      // Enviar cotações para transportadoras do webservice
+      if (siglasWS.length > 0) {
+        siglasWS.forEach(siglaWS => {
+          console.log(`Pedido: ${codigoPedido} - Sigla: ${siglaWS}`);
+          const payload = {
             cepOrigem,
             cepDestino,
             codigoPedido,
@@ -164,30 +161,21 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao, siglasTansporta
             produtos,
             tabChave: [],
             cliente: tokenCliente,
-            servicos: [siglaWS]
+            servicos: [siglaWS],
           };
-
-          const headers = {
-            "zord-token": "26357d37471ee60fc037f0ebb1a81a01eba98230",
-            "Content-Type": "application/json",
-          };
-
-          // Envia os dados formatados para o segundo endpoint
-          try {
-            const response = await axios.post(URL_BASE + '/api/v1/calculoFreteAnalise', payload, { headers });
-            response.data.codigoPedido = codigoPedido;
-            pedidosRecalculados.push(response.data);
-          } catch (error) {
-            console.log('Ocorreu um erro ao refazer cotações:', error);
-          }
-        }
+          promises.push(enviarCotacao(payload, codigoPedido));
+        });
       }
+
+      // Aguarda todas as promessas serem resolvidas
+      await Promise.all(promises);
     }
   } catch (error) {
     console.error('Erro ao processar pedidos:', error);
   }
   return pedidosRecalculados;
 };
+
 
 export const buscaCotacoesGerais = async () => {
   return await cotacoesGerais();
