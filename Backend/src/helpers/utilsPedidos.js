@@ -5,8 +5,14 @@ import fs from 'fs';
 
 export const recriarBancoDados = () => {
   try {
+    let dbPath = process.env.DB;
+    
+    if (dbPath) {
+      dbPath = dbPath.replace(/\\[Pp]rojetos\\/g, '\\Projetos\\');
+    }
+    
     // Excluir o banco de dados SQLite existente
-    fs.unlinkSync(process.env.DB);
+    fs.unlinkSync(dbPath);
     console.log('Banco de dados SQLite excluído com sucesso.');
 
     // Executar as migrations do Prisma para criar o novo banco de dados

@@ -1,4 +1,5 @@
 import { createObjectCsvWriter } from 'csv-writer';
+import { writeFile } from 'fs/promises';
 
 import { formatarValor } from '../helpers/utilsPedidos.js'
 import { prisma } from "../services/prisma.js";
@@ -148,37 +149,37 @@ export const cotacoesVencedorasQuantitativos = async () => {
 
 
 
+const gerarConteudoCsv = (registros) => {
+  const headers = [
+    'Código do Pedido',
+    'Cidade do destino',
+    'UF do destino',
+    'Código do serviço',
+    'Valor',
+    'Prazo Final'
+  ];
 
+  // Monta o cabeçalho e os registros CSV
+  const linhas = [
+    headers.join(';'),
+    ...registros.map(servico => {
+      const valorNumerico = parseFloat(servico.valor); // Converte o valor para número
+      const valorFormatado = isNaN(valorNumerico) ? '0,00' : valorNumerico.toFixed(2).replace('.', ','); // Formata o valor
 
+      return [
+        servico.codigoPedido,
+        servico.cidadeDestino,
+        servico.ufDestino,
+        servico.codigoServico,
+        valorFormatado, // Inclui o valor formatado diretamente
+        servico.prazoFinal
+      ].join(';');
+    })
+  ];
 
-// MÉTODOS REFERENTE AOS ARQUIVOS CSV 
-// 
-// Crie uma instância do objeto CSV Writer e defina o cabeçalho do CSV
-const csvWriter = createObjectCsvWriter({
-  path: 'cotacoes_vencedoras.csv',
-  fieldDelimiter: ";",
-  header: [
-    { id: 'codigoPedido', title: 'Código do Pedido' },
-    { id: 'cidadeDestino', title: 'Cidade do destino' },
-    { id: 'ufDestino', title: 'UF do destino' },
-    { id: 'codigoServico', title: 'Código do serviço' },
-    { id: 'valor', title: 'Valor' },
-    { id: 'prazoFinal', title: 'Prazo Final' }
-  ]
-});
+  return '\ufeff' + linhas.join('\n'); // Adiciona o BOM e retorna o conteúdo
+};
 
-const csvWriterGeral = createObjectCsvWriter({
-  path: 'cotacoes_gerais.csv',
-  fieldDelimiter: ";",
-  header: [
-    { id: 'codigoPedido', title: 'Código do Pedido' },
-    { id: 'cidadeDestino', title: 'Nome do destino' },
-    { id: 'ufDestino', title: 'UF do destino' },
-    { id: 'codigoServico', title: 'Código do serviço' },
-    { id: 'valor', title: 'Valor' },
-    { id: 'prazoFinal', title: 'Prazo Final' }
-  ]
-});
 
 export const gerarCSV = async () => {
   try {
@@ -201,12 +202,16 @@ export const gerarCSV = async () => {
       cidadeDestino: servico.cidadeDestino,
       ufDestino: servico.ufDestino,
       codigoServico: servico.codigoServico,
-      valor: servico.valor,
+      valor: servico.valor.toFixed(2).replace('.', ','),
       prazoFinal: servico.prazoFinal
     }));
 
-    // Escrever os dados no arquivo CSV
-    await csvWriter.writeRecords(registrosCSV);
+    // Gerar o conteúdo CSV
+    const conteudoCsv = gerarConteudoCsv(registrosCSV);
+
+    // Escrever o conteúdo no arquivo CSV
+    await writeFile('cotacoes_vencedoras.csv', conteudoCsv, { encoding: 'utf8' });
+
     console.log('Arquivo CSV gerado com sucesso');
   } catch (error) {
     console.error('Erro ao gerar o arquivo CSV:', error);
@@ -215,6 +220,9 @@ export const gerarCSV = async () => {
     await prisma.$disconnect();
   }
 };
+
+
+
 
 export const gerarCSVGeral = async () => {
   try {
@@ -231,12 +239,17 @@ export const gerarCSVGeral = async () => {
       cidadeDestino: servico.cidadeDestino,
       ufDestino: servico.ufDestino,
       codigoServico: servico.codigoServico,
-      valor: servico.valor,
+      valor: servico.valor.toFixed(2).replace('.', ','),
       prazoFinal: servico.prazoFinal
     }));
 
-    // Escrever os dados no arquivo CSV
-    await csvWriterGeral.writeRecords(registrosCSV);
+    // Gerar o conteúdo CSV
+    const conteudoCsv = gerarConteudoCsv(registrosCSV);
+
+    // Escrever o conteúdo no arquivo CSV
+    await writeFile('cotacoes_gerais.csv', conteudoCsv, { encoding: 'utf8' });
+
+
     console.log('Arquivo CSV gerado com sucesso');
   } catch (error) {
     console.error('Erro ao gerar o arquivo CSV:', error);

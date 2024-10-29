@@ -19,7 +19,7 @@ const URL_BASE = 'https://api-transporte-staging.magazord.com.br'
  * @param {string} [siglaOriginal=null] - A sigla original, opcional.
  * @returns {Array} - Um array contendo os pedidos encontrados.
  */
-export const buscarPedidos = async (identificador, siglasNovaCotacao, siglasTansportadorasWebservice, tokenCliente, dataInicio, dataFim, siglaOriginal = null) => {
+export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null, siglasTansportadorasWebservice, tokenCliente) => {
   // Inicializações
   let totalPaginas = Infinity;
   let novasCotacoes = [];
@@ -118,8 +118,11 @@ const realizarNovasCotacoes = async (pedidos, siglasNovaCotacao, siglasTansporta
 
       // Divide as siglas de cotação
       const tabChave = siglasNovaCotacao.split(',');
+      let siglasWS = []
 
-      const siglasWS = siglasTansportadorasWebservice.split(',');
+      if (siglasTansportadorasWebservice !== null) {
+        siglasWS = siglasTansportadorasWebservice.split(',');
+      }
 
       // Itera sobre as siglas de cotação
       for (let sigla of tabChave) {

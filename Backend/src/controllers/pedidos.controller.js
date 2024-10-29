@@ -6,8 +6,8 @@ import { buscaCotacoesGerais, buscaCotacoesVencedoras, buscaCotacoesVencedorasQu
 export const getRefazCotacoes = async (req, res) => {
   const identificador = req.query.identificador;
   const siglasNovaCotacao = req.query.siglasNovaCotacao;
-  const siglasTansportadorasWebservice = req.query.siglasTansportadorasWebservice;
-  const tokenCliente = req.query.tokenCliente;
+  const siglasTansportadorasWebservice = req.query.siglasTansportadorasWebservice || null;
+  const tokenCliente = req.query.tokenCliente || null;
   const dataInicio = req.query.dataInicio;
   const dataFim = req.query.dataFim;
   // Sigla original é opcional, caso queiram recotar somente os pedidos de uma determinada
@@ -23,7 +23,7 @@ export const getRefazCotacoes = async (req, res) => {
     dataFim
   ) {
     try {
-      const pedidos = await buscarPedidos(identificador, siglasNovaCotacao, siglasTansportadorasWebservice, tokenCliente, dataInicio, dataFim, siglaOriginal = null);
+      const pedidos = await buscarPedidos(identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null, siglasTansportadorasWebservice, tokenCliente);
 
       res.status(200).json(pedidos);
     } catch (error) {
