@@ -34,6 +34,11 @@ export const getRefazCotacoes = async (req, res) => {
   }
 }
 
+export const getProgresso = async (req, res) => {
+  const progresso = await buscarPaginaAtual();
+  res.status(200).json(progresso);
+}
+
 
 export const getCotacoesGeraisDados = async (req, res) => {
   const cotacoesGeraisProntas = await buscaCotacoesGerais();
