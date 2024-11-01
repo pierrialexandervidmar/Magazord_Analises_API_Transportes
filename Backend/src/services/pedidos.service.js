@@ -9,6 +9,10 @@ import { cotacoesGerais, cotacoesVencedoras, cotacoesVencedorasQuantitativos, ge
 const URL_BASE_PROD = 'https://api-transporte.magazord.com.br'
 const URL_BASE = 'https://api-transporte-staging.magazord.com.br'
 
+let progressoAtual = { total: 0, pagina: 0 }; // Armazena o progresso atual
+
+export const obterProgresso = () => progressoAtual
+
 /**
  * Busca pedidos com base nos parâmetros fornecidos.
  *
@@ -66,6 +70,7 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
     const primeiraResposta = await buscarPedidosPorPagina(1);
     totalPaginas = Math.ceil(primeiraResposta.data.totalPages);
 
+
     recriarBancoDados();
 
     // Loop para buscar todas as páginas de pedidos e realizar novas cotações
@@ -83,6 +88,9 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
 
       // Salva os pedidos recalculados no banco de dados após cada página
       await salvarPedidosRecalculados(novasCotacoesPagina);
+
+      // Atualiza o progresso
+      progressoAtual = { total: totalPaginas, pagina };
     }
 
     //exportarDestinosEServicosComoCSV()
@@ -188,5 +196,3 @@ export const buscaCotacoesVencedoras = async () => {
 export const buscaCotacoesVencedorasQuantitativo = async () => {
   return await cotacoesVencedorasQuantitativos();
 }
-
-

@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 import { cotacoesGerais } from '../repositories/pedidos.repository.js';
-import { buscaCotacoesGerais, buscaCotacoesVencedoras, buscaCotacoesVencedorasQuantitativo, buscarPedidos } from '../services/pedidos.service.js'
+import { buscaCotacoesGerais, buscaCotacoesVencedoras, buscaCotacoesVencedorasQuantitativo, buscarPedidos, obterProgresso } from '../services/pedidos.service.js'
 
 export const getRefazCotacoes = async (req, res) => {
   const identificador = req.query.identificador;
@@ -35,10 +35,9 @@ export const getRefazCotacoes = async (req, res) => {
 }
 
 export const getProgresso = async (req, res) => {
-  const progresso = await buscarPaginaAtual();
+  const progresso = await obterProgresso();
   res.status(200).json(progresso);
 }
-
 
 export const getCotacoesGeraisDados = async (req, res) => {
   const cotacoesGeraisProntas = await buscaCotacoesGerais();
