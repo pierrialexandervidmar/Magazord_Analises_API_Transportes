@@ -24,6 +24,9 @@ export const obterProgresso = () => progressoAtual
  * @returns {Array} - Um array contendo os pedidos encontrados.
  */
 export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null, siglasTansportadorasWebservice, tokenCliente) => {
+
+  progressoAtual = { total: 0, pagina: 0 };
+
   // Inicializações
   let totalPaginas = Infinity;
   let novasCotacoes = [];
@@ -98,6 +101,10 @@ export const buscarPedidos = async (identificador, siglasNovaCotacao, dataInicio
     gerarCSVGeral()
 
     console.timeEnd("tempoRequisicao");
+
+    // Zera o progresso ao final da requisição
+    progressoAtual = { total: 0, pagina: 0 };
+
     return novasCotacoes;
 
   } catch (error) {
