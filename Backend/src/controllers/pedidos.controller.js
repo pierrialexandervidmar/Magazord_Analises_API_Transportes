@@ -6,7 +6,7 @@ import { buscaCotacoesGerais, buscaCotacoesVencedoras, buscaCotacoesVencedorasQu
 export const getRefazCotacoes = async (req, res) => {
   const identificador = req.query.identificador;
   const siglasNovaCotacao = req.query.siglasNovaCotacao;
-  const siglasTansportadorasWebservice = req.query.siglasTansportadorasWebservice || null;
+  const siglasTransportadorasWebservice = req.query.siglasTransportadorasWebservice || null;
   const tokenCliente = req.query.tokenCliente || null;
   const dataInicio = req.query.dataInicio;
   const dataFim = req.query.dataFim;
@@ -14,7 +14,7 @@ export const getRefazCotacoes = async (req, res) => {
   // transporportadora do periodo com as siglas novas de cotações
   let siglaOriginal = req.query.siglaOriginal || null;
 
-  console.log(identificador + ' ' + siglasNovaCotacao + ' ' + siglasTansportadorasWebservice + ' ' + tokenCliente + ' ' + dataInicio + ' ' + dataFim + ' ' + siglaOriginal)
+  console.log(identificador + ' ' + siglasNovaCotacao + ' ' + siglasTransportadorasWebservice + ' ' + tokenCliente + ' ' + dataInicio + ' ' + dataFim + ' ' + siglaOriginal)
 
   if (
     identificador?.trim() &&
@@ -23,7 +23,7 @@ export const getRefazCotacoes = async (req, res) => {
     dataFim
   ) {
     try {
-      const pedidos = await buscarPedidos(identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null, siglasTansportadorasWebservice, tokenCliente);
+      const pedidos = await buscarPedidos(identificador, siglasNovaCotacao, dataInicio, dataFim, siglaOriginal = null, siglasTransportadorasWebservice, tokenCliente);
 
       res.status(200).json(pedidos);
     } catch (error) {
