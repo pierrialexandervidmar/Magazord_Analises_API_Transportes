@@ -24,8 +24,8 @@ export const salvarPedidosRecalculados = async (pedidosRecalculados) => {
           data: {
             codigo: servico.codigo,
             valor: formatarValor(servico.valor),
-            prazo: servico.prazo ?? 1,
-            prazoFinal: servico.prazoFinal ?? 1,
+            prazo: parseInt(servico.prazo ?? 1, 10),
+            prazoFinal: parseInt(servico.prazoFinal ?? 1, 10),
             destino: { connect: { id: destino.id } },
           },
         });
